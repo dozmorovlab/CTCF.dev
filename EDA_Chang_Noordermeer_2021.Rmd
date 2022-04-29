@@ -1,0 +1,105 @@
+---
+title: "Analysis"
+author: "Mikhail Dozmorov"
+date: "`r Sys.Date()`"
+output:
+  pdf_document:
+    toc: no
+  html_document:
+    theme: cerulean
+    toc: yes
+---
+
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
+# Set up the environment
+library(knitr)
+opts_chunk$set(cache.path='cache/', fig.path='img/', cache=F, tidy=T, fig.keep='high', echo=F, dpi=100, warnings=F, message=F, comment=NA, warning=F, results='as.is', fig.width = 10, fig.height = 6) #out.width=700, 
+library(pander)
+panderOptions('table.split.table', Inf)
+set.seed(1)
+```
+
+# Libraries
+
+```{r libraries}
+library(tidyverse)
+library(readxl)
+library(writexl)
+library(GenomicRanges)
+```
+
+# Settings
+
+```{r settings}
+# Project folder path
+dir_data <- "/Users/mdozmorov/Documents/Work/GitHub/CTCF.dev"
+
+# Input files
+fileNameIn1 <- file.path(dir_data, "data/Chang_Noordermeer_2021.xlsx")
+# Output files
+fileNameOut1 <- file.path(dir_data, "")
+```
+
+# Load data
+
+```{r data}
+# Read in data
+mtx <- read_xlsx(fileNameIn1, skip = 1)
+```
+
+## EDA
+
+```{r}
+summary(mtx$`-log10  p-value...7`)
+summary(mtx$`-log10  q-value...8`)
+summary(mtx$`-log10  p-value...13`)
+summary(mtx$`-log10  q-value...14`)
+table(mtx$`overlap with repeat(s)`)
+sum
+```
+
+# GRanges
+
+```{r}
+gr <- GRanges(seqnames = mtx$coordinate, IRanges(start = mtx$...3, end = mtx$...4), strand = mtx$strand)
+gr$ID <- mtx$number
+gr$length <- mtx$length
+gr$value <- mtx$value
+gr$peak.log10pval <- mtx$`-log10  p-value...7`
+gr$peak.log10qval <- mtx$`-log10  q-value...8`
+gr$sequence <-mtx$sequence
+gr$CTCF.log10pval <- mtx$`-log10  p-value...13`
+gr$CTCF.log10qval <- mtx$`-log10  q-value...14`
+gr$repeats <- mtx$`overlap with repeat(s)`
+
+genome_id <- "mm10"
+# Get chromosome info and match it to the chromosome order in ctcfBED
+chrom_data <- GenomeInfoDb::getChromInfoFromUCSC(genome = genome_id)
+chrom_data <- chrom_data[chrom_data$chrom %in% seqlevels(gr), ]
+chrom_data <- chrom_data[match(seqlevels(gr), chrom_data$chrom), ]
+# Check if chromosome order is the same
+if (!all.equal(seqlevels(gr), chrom_data$chrom)) {
+  print(paste("Chromosome order does not match for", genome_id, "genome."))
+  break
+}
+# Assign seqinfo data
+seqlengths(gr) <- chrom_data$size
+isCircular(gr) <- chrom_data$circular
+genome(gr)     <- genome_id
+
+gr
+
+# Save as RData object. subdir is the character name of the CTCF GRanges variable
+fileNameOut <- "CTCF_mm10_Chang_Noordermeer_2021.RData"
+save(list = gr, file = fileNameOut)
+# load(file = paste0(subdir, ".RData"))
+
+```
+
+"ID" - numerical ID of a region with multiple (overlapping) CTCF ChIP-seq peaks. "length" - length of the peak. "value" - strength of the peak. "peak.log10pval", "peak.log10qval" - significance of the peak. "sequence" - sequence of the CTCF motif. "CTCF.log10pval", "CTCF.log10qval" - significance of the motif. "repeats" - whether the motif overlaps a repeat.
+
+
+
+
+
+
