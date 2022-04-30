@@ -18,11 +18,22 @@ Authors
 
 # Introduction
 
+CTCF (CCCTC-binding factor) is a versatile transctiprion regulators that is evolutionary conserved from fruit fly to human. CTCF binds to different DNA sequences through combinatorial use of 11-zinc fingers, and shows distingc functions (transcription activation/repression and chromatin insulation).
+
+Topologically Associating Domains (TADs) are formed via cohesin-mediated loop extrusion mechanism [@Alipour:2012aa][@Fudenberg:2016aa][@Goloborodko:2016vz][@Schwarzer:2016aa]. CTCF binding, especially in convergent orientation, has long been known to be critical for loop formation [@Dixon:2012aa].
+
+ CTCF binding site database (CTCFBSDB), a comprehensive collection of experimentally determined and computationally predicted CTCF binding sites (CTCFBS) from the literature.
+
 # Methods
+
+
 
 # Results
 
 Chang et al. provides CTCF ChIP-seq peaks from mouse ESCs [@Chang:2021wl]. They report 174,268 peaks (83,522 unique regions) having at least one significant CTCF binding motif.
+
+CTCFBSDB assembled predictred and experimentally detected CTCF binding information. Human predictions containes 13,356 sites (hg19) and mouse predictions contained 5,504 sites (mm9).
+
 
 
 How to insert single [@Dozmorov:2016aa][@Glass:2016aa] or multiple references [@Dozmorov:2016aa; @Glass:2016aa].

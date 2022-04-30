@@ -1,10 +1,5 @@
 
 
-
-CTCF-MP, https://github.com/ma-compbio/CTCF-MP/tree/master/Data/gm12878
-
-CTCFBSDB
-
 https://screen.encodeproject.org/
 
 http://cisbp.ccbr.utoronto.ca/TFreport.php?searchTF=T094831_2.00 - `CisBP_2022_02_24_4_13_pm` - Homo Sapiens CTCF downloaded
@@ -34,5 +29,13 @@ http://cisbp.ccbr.utoronto.ca/TFreport.php?searchTF=T094831_2.00 - `CisBP_2022_0
 - In addition to CTCF, ZNF143, YY1, DNAse, H3K36me3, TSSs, RNA Pol II, SP1, ZNF274, SIX5. From Hong, Seungpyo, and Dongsup Kim. “Computational Characterization of Chromatin Domain Boundary-Associated Genomic Elements.” Nucleic Acids Research 45, no. 18 (October 13, 2017): 10403–14. https://doi.org/10.1093/nar/gkx738.
 
 - four members of the cohesin complex (STAG2, SMC3, SMC1A, and RAD21) - from M. Ryan Corces and Victor G. Corces, “The Three-Dimensional Cancer Genome,” Current Opinion in Genetics & Development 36 (2016)
+
+# Motif matrices
+
+https://insulatordb.uthsc.edu/download/CTCFBSDB_PWM.mat
+
+# Backburner
+
+CTCF-MP, https://github.com/ma-compbio/CTCF-MP/tree/master/Data/gm12878
 
 

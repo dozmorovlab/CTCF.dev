@@ -36,11 +36,15 @@ dir_data <- "/Users/mdozmorov/Documents/Work/GitHub/CTCF.dev"
 
 # Input files
 fileNameIn1 <- file.path(dir_data, "data/Chang_Noordermeer_2021.xlsx")
+# download.file("https://www.biorxiv.org/content/biorxiv/early/2021/04/15/2021.04.15.440007/DC1/embed/media-1.xlsx", fileNameIn1)
+
 # Output files
-fileNameOut1 <- file.path(dir_data, "")
+fileNameOut1 <- "results/CTCF_mm10_Chang_Noordermeer_2021.RData"
 ```
 
 # Load data
+
+"ID" - numerical ID of a region with multiple (overlapping) CTCF ChIP-seq peaks. "length" - length of the peak. "value" - strength of the peak. "peak.log10pval", "peak.log10qval" - significance of the peak. "sequence" - sequence of the CTCF motif. "CTCF.log10pval", "CTCF.log10qval" - significance of the motif. "repeats" - whether the motif overlaps a repeat.
 
 ```{r data}
 # Read in data
@@ -55,7 +59,6 @@ summary(mtx$`-log10  q-value...8`)
 summary(mtx$`-log10  p-value...13`)
 summary(mtx$`-log10  q-value...14`)
 table(mtx$`overlap with repeat(s)`)
-sum
 ```
 
 # GRanges
@@ -86,17 +89,12 @@ if (!all.equal(seqlevels(gr), chrom_data$chrom)) {
 seqlengths(gr) <- chrom_data$size
 isCircular(gr) <- chrom_data$circular
 genome(gr)     <- genome_id
-
 gr
 
-# Save as RData object. subdir is the character name of the CTCF GRanges variable
-fileNameOut <- "CTCF_mm10_Chang_Noordermeer_2021.RData"
-save(list = gr, file = fileNameOut)
+# Save as RData object.
+save(list = gr, file = fileNameOut1)
 # load(file = paste0(subdir, ".RData"))
-
 ```
-
-"ID" - numerical ID of a region with multiple (overlapping) CTCF ChIP-seq peaks. "length" - length of the peak. "value" - strength of the peak. "peak.log10pval", "peak.log10qval" - significance of the peak. "sequence" - sequence of the CTCF motif. "CTCF.log10pval", "CTCF.log10qval" - significance of the motif. "repeats" - whether the motif overlaps a repeat.
 
 
 
