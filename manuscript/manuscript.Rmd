@@ -18,11 +18,15 @@ Authors
 
 # Introduction
 
-CTCF (CCCTC-binding factor) is a versatile transctiprion regulators that is evolutionary conserved from fruit fly to human. CTCF binds to different DNA sequences through combinatorial use of 11-zinc fingers, and shows distingc functions (transcription activation/repression and chromatin insulation).
+CTCF (CCCTC-binding factor) is a versatile transctiprion regulators that is evolutionary conserved from fruit fly to human [@Phillips:2009aa][@Ohlsson:2001wu]. <!--It was originally defined as a transcriptional repressor of the MYC oncogene [@Lobanenkov:1990vm][@Filippova:1996tv].--> Originally defined as a repressor/insulator [@Lobanenkov:1990vm][@Filippova:1996tv], it has been found to be involved in a variety of regulatory functions including transcriptional activation, imprinting, X-chromosome activation, the intra- and inter-chromosomal contacts in three dimensions [@Phillips:2009aa][@Ohlsson:2010uy].
+
+
+
+CTCF binds to different DNA sequences through combinatorial use of 11-zinc fingers. While many functional CTCF-binding sites do not match a consensus motif [@Ohlsson:2010uy], a multi-part CTCF-binding motif has been defined [@Schmidt:2012uk]. For the majority of CTCF–DNA- binding events, the N-terminal zinc fingers interact with a 14-bp long M1 motif. Additionally, the C-terminal fingers interact with a shorter M2 sequence, creating a 34-bp-long M1+M2 motif. 
 
 Topologically Associating Domains (TADs) are formed via cohesin-mediated loop extrusion mechanism [@Alipour:2012aa][@Fudenberg:2016aa][@Goloborodko:2016vz][@Schwarzer:2016aa]. CTCF binding, especially in convergent orientation, has long been known to be critical for loop formation [@Dixon:2012aa].
 
- CTCF binding site database (CTCFBSDB), a comprehensive collection of experimentally determined and computationally predicted CTCF binding sites (CTCFBS) from the literature.
+The CTCF binding site database (CTCFBSDB) provides multi-organism computationally predicted and experimentally determined from the literature CTCF binding sites [@Ziebarth:2013vj]. Unfortunately, the database has not been updated since 2013 and its data are limited to old genome assemblies (e.g., hg19, mm9).
 
 # Methods
 
@@ -32,7 +36,7 @@ Topologically Associating Domains (TADs) are formed via cohesin-mediated loop ex
 
 Chang et al. provides CTCF ChIP-seq peaks from mouse ESCs [@Chang:2021wl]. They report 174,268 peaks (83,522 unique regions) having at least one significant CTCF binding motif.
 
-CTCFBSDB assembled predictred and experimentally detected CTCF binding information. Human predictions containes 13,356 sites (hg19) and mouse predictions contained 5,504 sites (mm9).
+CTCFBSDB assembled predictred and experimentally detected CTCF binding information [@Bao:2008vq]. Human predictions containes 13,356 sites (hg19) and mouse predictions contained 5,504 sites (mm9).
 
 
 
