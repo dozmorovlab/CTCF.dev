@@ -1,7 +1,5 @@
 
 
-https://screen.encodeproject.org/
-
 http://cisbp.ccbr.utoronto.ca/TFreport.php?searchTF=T094831_2.00 - `CisBP_2022_02_24_4_13_pm` - Homo Sapiens CTCF downloaded
 
 

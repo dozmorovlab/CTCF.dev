@@ -38,7 +38,7 @@ Chang et al. provides CTCF ChIP-seq peaks from mouse ESCs [@Chang:2021wl]. They 
 
 CTCFBSDB assembled predictred and experimentally detected CTCF binding information [@Bao:2008vq]. Human predictions containes 13,356 sites (hg19) and mouse predictions contained 5,504 sites (mm9).
 
-
+SCREEN database provides CTCF-bound cis-regulatody element (cCRE) regions for human (hg38) and mouse (mm10) genome assemblies. The human set of regions contains 450,641 records. They were classified into distal-bound Enhancer-Like Signature (dELS) regions (61.18%), proximal ELS (pELS) regions (21.48%), CTCF-only sites (7.95%), promoter-like signature (PLS) regions (6.98%), and DNase-H3K4me3 regions bound by CTCF (1.84%). The mouse set contained 82,777 records similarly classified into 36.46% dELS-bound CTCF sites, 25.62% CTCF-only sites, 20.74% pELS-bound, 13.06 PLS-bound, and 4.11% DNase-H3K4me3-bound CTCF sites.
 
 How to insert single [@Dozmorov:2016aa][@Glass:2016aa] or multiple references [@Dozmorov:2016aa; @Glass:2016aa].
 
