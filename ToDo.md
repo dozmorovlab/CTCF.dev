@@ -1,15 +1,5 @@
+- http://cisbp.ccbr.utoronto.ca/TFreport.php?searchTF=T094831_2.00 - `CisBP_2022_02_24_4_13_pm` - Homo Sapiens CTCF PWM motif matrices
 
-
-http://cisbp.ccbr.utoronto.ca/TFreport.php?searchTF=T094831_2.00 - `CisBP_2022_02_24_4_13_pm` - Homo Sapiens CTCF downloaded
-
-
-- Motif files can be downloaded from https://bcm.app.box.com/v/juicerawsmirror/folder/11363582187.
-    - REN motifs http://www.sciencedirect.com/science/article/pii/S009286740700205X
-    - M1 motifs https://www.sciencedirect.com/science/article/pii/S0092867411015078
-
-- From Oti, Martin, Jonas Falck, Martijn A. Huynen, and Huiqing Zhou. “CTCF-Mediated Chromatin Loops Enclose Inducible Gene Regulatory Domains.” BMC Genomics 17 (March 22, 2016): 252. https://doi.org/10.1186/s12864-016-2516-6. - CTCF loops investigation in multiple tissues. Max size - 200kb. Enclose regulatory domains of enhancer-regulated genes. Within loops - enrichment in enhancer-related marks. on the boundaries - histone marks and housekeeping genes from Eisenberg E, Levanon EY. Human housekeeping genes, revisited. Predict CTCF loops from ChIP-seq peaks. CTCF orientation method - should be oriented into the loop. Predicted CTCF sites: https://zenodo.org/record/29423
-    - `fimo_ctcfmotifs_MA0139_hg19_2.5e-4.bed` - genome-wide CTCF motifs in human genome (hg19) detected by FIMO tool. From https://zenodo.org/record/29423. 1310708 CTCF motifs. Columns: chromosome, start, end, name, score, strand, p-value, q-value, sequence.
-    - `ctcf_predictedloops_ENCODE_chipseq_datasets.tar.gz` - Predicted CTCF loops for 100 ENCODE ChIP-seq datasets. 100 files named like `predictedloops_wgEncodeAwgTfbsBroadGm12878CtcfUniPk_prop04.bed`. Columns: chromosome, start, end, paired coordinates and score, score, strand as dot, start coordinate of the first in pair, end coordinate of the second in pair, 16711680, 2, comma-separated width of CTCF sites, comma-separated something.
 
  mESC CTCF, https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE36027
 - mESC epigenomic marks, https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE31039

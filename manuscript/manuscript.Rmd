@@ -24,7 +24,7 @@ CTCF (CCCTC-binding factor) is a versatile transctiprion regulators that is evol
 
 CTCF binds to different DNA sequences through combinatorial use of 11-zinc fingers. While many functional CTCF-binding sites do not match a consensus motif [@Ohlsson:2010uy], a multi-part CTCF-binding motif has been defined [@Schmidt:2012uk]. For the majority of CTCF–DNA- binding events, the N-terminal zinc fingers interact with a 14-bp long M1 motif. Additionally, the C-terminal fingers interact with a shorter M2 sequence, creating a 34-bp-long M1+M2 motif. 
 
-Topologically Associating Domains (TADs) are formed via cohesin-mediated loop extrusion mechanism [@Alipour:2012aa][@Fudenberg:2016aa][@Goloborodko:2016vz][@Schwarzer:2016aa]. CTCF binding, especially in convergent orientation, has long been known to be critical for loop formation [@Dixon:2012aa].
+Topologically Associating Domains (TADs) are formed via cohesin-mediated loop extrusion mechanism [@Alipour:2012aa][@Fudenberg:2016aa][@Goloborodko:2016vz][@Schwarzer:2016aa]. CTCF binding, especially in convergent orientation, has long been known to be critical for loop formation [@Dixon:2012aa][@Oti:2016aa].
 
 The CTCF binding site database (CTCFBSDB) provides multi-organism computationally predicted and experimentally determined from the literature CTCF binding sites [@Ziebarth:2013vj]. Unfortunately, the database has not been updated since 2013 and its data are limited to old genome assemblies (e.g., hg19, mm9).
 
@@ -34,9 +34,9 @@ The CTCF binding site database (CTCFBSDB) provides multi-organism computationall
 
 # Results
 
-Chang et al. provides CTCF ChIP-seq peaks from mouse ESCs [@Chang:2021wl]. They report 174,268 peaks (83,522 unique regions) having at least one significant CTCF binding motif.
+Chang et al. provides CTCF ChIP-seq peaks from mouse ESCs [@Chang:2021wl]. They report 174,268 peaks (83,522 unique regions) having at least one significant CTCF binding motif (mm10 genome assembly).
 
-CTCFBSDB assembled predictred and experimentally detected CTCF binding information [@Bao:2008vq]. Human predictions containes 13,356 sites (hg19) and mouse predictions contained 5,504 sites (mm9).
+CTCFBSDB assembled predicted and experimentally detected CTCF binding information [@Bao:2008vq]. Human predictions containes 13,356 sites and mouse predictions contained 5,504 sites (hg19 and mm9 genome assemblies, respectively). Unfortunately, the database has not been updated since 2012; therefore, its data is of limited use.
 
 The ENCODE Phase III data release has created SCREEN, a registry of cis-regulatody element (cCRE) regions for human (hg38) and mouse (mm10) genome assemblies [@ENCODE-Project-Consortium:2020uq]. The human set of CTCF-bound cCREs contains 450,641 records. They were classified into distal-bound Enhancer-Like Signature (dELS) regions (61.18%), proximal ELS (pELS) regions (21.48%), CTCF-only sites (7.95%), promoter-like signature (PLS) regions (6.98%), and DNase-H3K4me3 regions bound by CTCF (1.84%). The mouse set contained 82,777 records similarly classified into 36.46% dELS-bound CTCF sites, 25.62% CTCF-only sites, 20.74% pELS-bound, 13.06 PLS-bound, and 4.11% DNase-H3K4me3-bound CTCF sites.
 
