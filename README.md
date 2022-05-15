@@ -27,5 +27,30 @@
 - hg38.PWMScan.HOCOMOCO_v11_Human_TF_Collection.CTCF_HUMAN_H11MO0A - 159522, 19bp
 - hg38.PWMScan.Isakova2017_SMILWseq_Human_TF_Binding.CTCF - 79761, 15bp
 - hg38.PWMScan.SwissRegulon_Human_and_Mouse.CTCF_p2 - 163274, 20bp
-- hg38.PWMScan.CIS_BP.CTCF_M4424_102 - 164278, 21bp
+- hg38.PWMScan.CIS_BP.CTCF_M4427_102 - 164278, 21bp
+
+- mm10.PWMScan.JASPAR_CORE_2020_vertebrates.CTCF_MA01391 - 202655, 19bp
+- mm10.PWMScan.Jomla2013_Human_and_Mouse_HT_SELEX.CTCF_C2H2_full_monomeric - 103051, 17bp
+- mm10.PWMScan.Jomla2013_Human_and_Mouse_Complete_Set.CTCF_full - 103048, 17bp
+- mm10.PWMScan.HOCOMOCO_v11_Mouse_TF_Collection.CTCF_MOUSE_H11MO0A - 193410, 20bp
+- mm10.PWMScan.Isakova2017_SMILWseq_Mouse_TF_Binding.CTCF - 149581, 17bp
+- mm10.PWMScan.SwissRegulon_Human_and_Mouse.CTCF_p2 - 235028, 20bp
+- mm10.PWMScan.CIS_BP.CTCF_M6125_102 - 247201, 15bp
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

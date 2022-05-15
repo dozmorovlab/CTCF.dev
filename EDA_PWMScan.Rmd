@@ -34,6 +34,7 @@ library(scales)
 # scales::show_col(pal_lancet("lanonc")(8))
 mycols = pal_lancet("lanonc")(8)
 library(plyranges)
+library(pheatmap)
 library(patchwork)
 ```
 
@@ -43,7 +44,8 @@ library(patchwork)
 # Project folder path
 dir_data <- "/Users/mdozmorov/Documents/Work/GitHub/CTCF.dev/data/PWMscan/"
 # Genome assembly
-genome_assembly <- "hg38"
+# genome_assembly <- "hg38"
+genome_assembly <- "mm10"
 
 # Input files
 fileNameIn1 <- file.path(dir_data, "")
@@ -146,7 +148,59 @@ for(i in 1: length(bed_list_standard)) {
 wrap_plots(p_list, nrow = length(p_list))
 ```
 
+## Jaccard
 
+```{r jaccard, warning=FALSE, fig.width=6.5, fig.height=6}
+save_pheatmap_svg <- function(x, filename, width=4.5, height=3, units = "in", res = 300) {
+  stopifnot(!missing(x))
+  stopifnot(!missing(filename))
+  svg(filename, width=width, height=height)
+  grid::grid.newpage()
+  grid::grid.draw(x$gtable)
+  dev.off()
+}
+# Jaccard calculations
+jaccard <- function(gr_a, gr_b) {
+  intersects <- GenomicRanges::intersect(gr_a, gr_b, ignore.strand = TRUE)
+  intersection <- sum(width(intersects))
+  union <- sum(width(GenomicRanges::union(gr_a, gr_b, ignore.strand = TRUE)))
+  DataFrame(intersection, union, 
+            jaccard = intersection/union,
+             n_intersections = length(intersects))
+}
+# Correlation matrix, empty
+mtx_to_plot <- matrix(data = 0, nrow = length(bed_list_standard), ncol = length(bed_list_standard))
+# Fill it in
+for (i in 1:length(bed_list_standard)) {
+  for (j in 1:length(bed_list_standard)) {
+    # If diagonal, set to zero
+    if (i == j) mtx_to_plot[i, j] <- 0
+    # Process only one half, the other is symmetric
+    if (i > j) {
+      mtx_to_plot[i, j] <- mtx_to_plot[j, i] <- jaccard(bed_list_standard[[i]], bed_list_standard[[j]])[["jaccard"]]
+    }
+  }
+}
+# Trim row/colnames
+rownames(mtx_to_plot) <- colnames(mtx_to_plot) <- str_trunc(names(bed_list_standard), width = 25) 
+# Save the plot
+# png("man/figures/excluderanges_hg38_jaccard.png", width = 1000, height = 900, res = 200)
+if(genome_assembly == "hg38") {
+  clust_method <- "euclidean"
+}
+if(genome_assembly == "mm10") {
+  clust_method <- "correlation"
+}
+pheatmap(data.matrix(mtx_to_plot), cluster_cols = T, cluster_rows = T,
+         clustering_method = "ward.D", 
+         clustering_distance_rows = clust_method, 
+         clustering_distance_cols = clust_method, 
+         # annotation_row = mydf, annotation_colors = list(Group = c(PR = mycols[1], CR = mycols[2])),
+         treeheight_row = 40,
+         treeheight_col = 0, 
+         display_numbers = TRUE)
+# dev.off()
+```
 
 
 
