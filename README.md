@@ -1,6 +1,8 @@
 - `EDA_SCREEN.Rmd` - Processing https://screen.encodeproject.org/
 - `EDA_CTCFBSDB.Rmd` - Processing CTCFBSDB, predicted and experimental data
 - `EDA_Chang_Noordermeer_2021.Rmd` - Processing `Chang_Noordermeer_2021.xlsx`
+- `EDA_PWMScan.Rmd` - PWMScan analysis
+
 
 # `data`
 
@@ -14,3 +16,16 @@
     - M1 motifs https://www.sciencedirect.com/science/article/pii/S0092867411015078
     
 - `ctcf_predictedloops_ENCODE_chipseq_datasets` - Cell-specific Predicted CTCF loops for 100 ENCODE ChIP-seq datasets. 100 files named like `predictedloops_wgEncodeAwgTfbsBroadGm12878CtcfUniPk_prop04.bed`. Columns: chromosome, start, end, paired coordinates and score, score, strand as dot, start coordinate of the first in pair, end coordinate of the second in pair, 16711680, 2, comma-separated width of CTCF sites, comma-separated something. hg19. - From Oti, Martin, Jonas Falck, Martijn A. Huynen, and Huiqing Zhou. “CTCF-Mediated Chromatin Loops Enclose Inducible Gene Regulatory Domains.” BMC Genomics 17 (March 22, 2016): 252. https://doi.org/10.1186/s12864-016-2516-6. - CTCF loops investigation in multiple tissues. Max size - 200kb. Enclose regulatory domains of enhancer-regulated genes. Within loops - enrichment in enhancer-related marks. on the boundaries - histone marks and housekeeping genes from Eisenberg E, Levanon EY. Human housekeeping genes, revisited. Predict CTCF loops from ChIP-seq peaks. CTCF orientation method - should be oriented into the loop. Predicted CTCF sites: https://zenodo.org/record/29423
+
+- `CTCFBSDB_PWM.mat` - PWMs in TRANSFAC format `wget https://insulatordb.uthsc.edu/download/CTCFBSDB_PWM.mat`
+
+## `PWMscan` https://ccg.epfl.ch/pwmtools/pwmscan.php
+
+- hg38.PWMScan.JASPAR_CORE_2020_vertebrates.CTCF_MA01391 - 148946, 19bp
+- hg38.PWMScan.Jomla2013_Human_and_Mouse_HT_SELEX.CTCF_C2H2_full_monomeric - 47794, 17bp
+- hg38.PWMScan.Jomla2013_Human_and_Mouse_Complete_Set.CTCF_full - 47792, 17bp
+- hg38.PWMScan.HOCOMOCO_v11_Human_TF_Collection.CTCF_HUMAN_H11MO0A - 159522, 19bp
+- hg38.PWMScan.Isakova2017_SMILWseq_Human_TF_Binding.CTCF - 79761, 15bp
+- hg38.PWMScan.SwissRegulon_Human_and_Mouse.CTCF_p2 - 163274, 20bp
+- hg38.PWMScan.CIS_BP.CTCF_M4424_102 - 164278, 21bp
+

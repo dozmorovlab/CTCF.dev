@@ -1,0 +1,154 @@
+---
+title: "Analysis"
+author: "Mikhail Dozmorov"
+date: "`r Sys.Date()`"
+output:
+  pdf_document:
+    toc: no
+  html_document:
+    theme: cerulean
+    toc: yes
+---
+
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
+# Set up the environment
+library(knitr)
+opts_chunk$set(cache.path='cache/', fig.path='img/', cache=T, tidy=T, fig.keep='high', echo=F, dpi=100, warnings=F, message=F, comment=NA, warning=F, results='as.is', fig.width = 10, fig.height = 6) #out.width=700, 
+library(pander)
+panderOptions('table.split.table', Inf)
+set.seed(1)
+```
+
+# Libraries
+
+```{r libraries}
+library(tidyverse)
+library(readxl)
+library(writexl)
+library(rtracklayer)
+library(stringr)
+library(cowplot)
+library(stringr)
+library("ggsci")
+library(scales)
+# scales::show_col(pal_lancet("lanonc")(8))
+mycols = pal_lancet("lanonc")(8)
+library(plyranges)
+library(patchwork)
+```
+
+# Settings
+
+```{r settings}
+# Project folder path
+dir_data <- "/Users/mdozmorov/Documents/Work/GitHub/CTCF.dev/data/PWMscan/"
+# Genome assembly
+genome_assembly <- "hg38"
+
+# Input files
+fileNameIn1 <- file.path(dir_data, "")
+# Output files
+fileNameOut1 <- file.path(dir_data, "")
+```
+
+# Load data
+
+```{r data}
+# Read in data
+files <- list.files(path = dir_data, pattern = genome_assembly, full.names = TRUE)
+# Object to store GRanges 
+bed_list_all <- list() # All chromosomes
+bed_list_standard <- list() # Standard chromosomes
+# Additional columns
+extraCols_names <- c("character", "character")
+names(extraCols_names) <- c("motif", "pval")
+# Process each file
+for(i in 1:length(files)) {
+  print(basename(files[i]))
+  # Read data
+  bed_file <- import(files[i], format = "bed", genome = genome_assembly, colnames = c("chrom", "start", "end", "name", "score", "strand", "motif", "pval"), extraCols = extraCols_names)
+  # Save all data
+  bed_list_all <- c(bed_list_all, list(bed_file))
+  # Keep standard chromosomes
+  bed_file_standard <- keepStandardChromosomes(bed_file)
+  # Save filtered data
+  bed_list_standard <- c(bed_list_standard, list(bed_file_standard))
+}
+# Add names
+names(bed_list_all) <- basename(files) %>% str_replace(., ".bed", "") %>% str_replace(., paste0(genome_assembly, ".PWMScan."), "")
+names(bed_list_standard) <- basename(files) %>% str_replace(., ".bed", "") %>% str_replace(., paste0(genome_assembly, ".PWMScan."), "")
+```
+
+# Summaries
+
+## Genomewide Number
+
+```{r fig.height=3, fig.width=10}
+stats_number_pos <- c()
+stats_number_neg <- c()
+for(i in 1:length(bed_list_standard)) {
+  stats_number_pos <- c(stats_number_pos, length(bed_list_standard[[i]][strand(bed_list_standard[[i]]) == "+" ]))
+  stats_number_neg <- c(stats_number_neg, length(bed_list_standard[[i]][strand(bed_list_standard[[i]]) == "-" ]))
+}
+mtx_to_plot <- data.frame(Number = c(stats_number_pos, stats_number_neg), 
+                          List = c(names(bed_list_standard), names(bed_list_standard)), 
+                          Strand = c(rep("+", length(stats_number_pos)), rep("-", length(stats_number_neg))))
+
+stats_number_total <- aggregate(mtx_to_plot$Number, list(mtx_to_plot$List), sum)
+colnames(stats_number_total) <- c("List", "Total")
+mtx_to_plot$List <- factor(mtx_to_plot$List, levels = stats_number_total$List[order(stats_number_total$Total)])
+ggplot(mtx_to_plot, aes(x = List, y = Number, fill = Strand)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  theme_bw(base_size = 15) +
+  # get rid of the grid 
+  theme(panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(), 
+        text = element_text(size = 15),
+        legend.position = c(0.8, 0.30)) +
+  scale_fill_manual(values = mycols[1:2]) + # change colors 
+  xlab("Database") +
+  ylab("Number of motifs") +
+  ggtitle(paste(genome_assembly, "genome assembly"))
+```
+
+## Chromosome-specific Number
+
+```{r fig.height=16, fig.width=10}
+bed_to_number_per_chr_plot <- function(i = 1) {
+  bed_list_standard_selected = bed_list_standard[[i]]
+  # Summarize counts per chromosome and strand
+  mtx_to_plot <- bed_list_standard_selected %>% group_by(seqnames, strand) %>% summarise(Number = n()) %>% as.data.frame()
+  # Reorder chromosomes
+  mtx_to_plot$seqnames <- factor(mtx_to_plot$seqnames, levels = (unique(mtx_to_plot$seqnames)))
+  p <- ggplot(mtx_to_plot, aes(x = seqnames, y = Number, fill = strand)) +
+    geom_bar(stat = "identity") +
+    # coord_flip() +
+    theme_bw(base_size = 15) +
+    # get rid of the grid 
+    theme(panel.grid.major = element_blank(), 
+          panel.grid.minor = element_blank(), 
+          text = element_text(size = 15),
+          legend.position = c(0.8, 0.80)) +
+    theme(axis.text.x = element_text(angle = 30, vjust = 0.5, hjust=1)) +
+    scale_fill_manual(values = mycols[1:2]) + # change colors 
+    xlab("Chromosome") +
+    ylab("Number of motifs") +
+    ggtitle(paste(genome_assembly, names(bed_list_standard)[i]))
+  return(p)
+}
+
+p_list <- list()
+for(i in 1: length(bed_list_standard)) {
+  print(names(bed_list_standard)[i])
+  p_list <- c(p_list, list(bed_to_number_per_chr_plot(i = i)))
+}
+wrap_plots(p_list, nrow = length(p_list))
+```
+
+
+
+
+
+
+
