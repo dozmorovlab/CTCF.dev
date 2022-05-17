@@ -36,6 +36,7 @@ mycols = pal_lancet("lanonc")(8)
 library(plyranges)
 library(pheatmap)
 library(patchwork)
+library(GenometriCorr)
 ```
 
 # Settings
@@ -177,7 +178,8 @@ for (i in 1:length(bed_list_standard)) {
     if (i == j) mtx_to_plot[i, j] <- 0
     # Process only one half, the other is symmetric
     if (i > j) {
-      mtx_to_plot[i, j] <- mtx_to_plot[j, i] <- jaccard(bed_list_standard[[i]], bed_list_standard[[j]])[["jaccard"]]
+      # mtx_to_plot[i, j] <- mtx_to_plot[j, i] <- jaccard(bed_list_standard[[i]], bed_list_standard[[j]])[["jaccard"]]
+      mtx_to_plot[i, j] <- mtx_to_plot[j, i] <- GCorr(bed_list_standard[[i]], bed_list_standard[[j]])
     }
   }
 }
@@ -202,7 +204,36 @@ pheatmap(data.matrix(mtx_to_plot), cluster_cols = T, cluster_rows = T,
 # dev.off()
 ```
 
+## GenometriCorr
+
+```{r}
+# CIS-BP
+gr1 <- bed_list_standard[[1]][seqnames(bed_list_standard[[1]]) == "chr1"]
+gr2 <- bed_list_standard[[5]][seqnames(bed_list_standard[[5]]) == "chr1"]
 
 
+# GenometriCorr of smaller query vs. larger reference
+# Returns either Jaccard or ECDF area correlation
+GCorr <- function(gr1, gr2, return_value = "relative.distances.ecdf.area.correlation") {
+  # Select smaller query and larger reference
+  if (length(gr1) >= length(gr2)) {
+    reference <- gr1
+    query <- gr2
+  } else {
+    reference <- gr2
+    query <- gr1
+  }
+  # GenometriCorr itselv
+  gr1_vs_gr2 <- GenometriCorrelation(query, reference, awhole.only = TRUE, showProgressBar = FALSE, permut.number = 0)
+  # What to return
+  if (return_value == "relative.distances.ecdf.area.correlation") {
+    return(gr1_vs_gr2$awhole$relative.distances.ecdf.area.correlation)
+  }
+  if (return_value == "jaccard.measure") {
+    return(gr1_vs_gr2$awhole$jaccard.measure)
+  }
+}
+
+```
 
 
