@@ -2,7 +2,7 @@
 - `EDA_CTCFBSDB.Rmd` - Processing CTCFBSDB, predicted and experimental data
 - `EDA_Chang_Noordermeer_2021.Rmd` - Processing `Chang_Noordermeer_2021.xlsx`
 - `EDA_PWMScan.Rmd` - PWMScan analysis
-
+- `EDA_AnnotationHub.Rmd` - explore CTCF data on AnnotationHub and ExperimentHub
 
 # `data`
 
@@ -16,6 +16,9 @@
     - M1 motifs https://www.sciencedirect.com/science/article/pii/S0092867411015078
     
 - `ctcf_predictedloops_ENCODE_chipseq_datasets` - Cell-specific Predicted CTCF loops for 100 ENCODE ChIP-seq datasets. 100 files named like `predictedloops_wgEncodeAwgTfbsBroadGm12878CtcfUniPk_prop04.bed`. Columns: chromosome, start, end, paired coordinates and score, score, strand as dot, start coordinate of the first in pair, end coordinate of the second in pair, 16711680, 2, comma-separated width of CTCF sites, comma-separated something. hg19. - From Oti, Martin, Jonas Falck, Martijn A. Huynen, and Huiqing Zhou. “CTCF-Mediated Chromatin Loops Enclose Inducible Gene Regulatory Domains.” BMC Genomics 17 (March 22, 2016): 252. https://doi.org/10.1186/s12864-016-2516-6. - CTCF loops investigation in multiple tissues. Max size - 200kb. Enclose regulatory domains of enhancer-regulated genes. Within loops - enrichment in enhancer-related marks. on the boundaries - histone marks and housekeeping genes from Eisenberg E, Levanon EY. Human housekeeping genes, revisited. Predict CTCF loops from ChIP-seq peaks. CTCF orientation method - should be oriented into the loop. Predicted CTCF sites: https://zenodo.org/record/29423
+
+- `02_120920_CTCF_motifs`, from https://figshare.com/articles/dataset/CTCF_core_and_auxiliary_motives_described_in_Nakahashi_et_al_A_genome-wide_map_of_CTCF_multivalency_redefines_the_CTCF_code_/7228733 - CTCF core and auxiliary motives described in Nakahashi et al "A genome-wide map of CTCF multivalency redefines the CTCF code". mm9
+    - `bestCoreMotif_pm50_seq.tab` - the best core motif from each peak, oriented the same way, plus 50 flanking nts
 
 - `CTCFBSDB_PWM.mat` - PWMs in TRANSFAC format `wget https://insulatordb.uthsc.edu/download/CTCFBSDB_PWM.mat`
 
