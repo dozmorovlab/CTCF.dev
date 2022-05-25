@@ -1,4 +1,8 @@
-- `EDA_SCREEN.Rmd` - Processing https://screen.encodeproject.org/
+File name conventions: `<assembly>.<Database>.<original file name or label>`
+
+- `EDA_SCREEN.Rmd` - Processing https://screen.encodeproject.org/. Basic stats, conversion to GRanges
+    - Input: `GRCh38-CTCF.bed` and `mm10-CTCF.bed`
+    - Output: `hg38.SCREEN.GRCh38_CTCF`, `mm10.SCREEN.mm10_CTCF` granges objects
 - `EDA_CTCFBSDB.Rmd` - Processing CTCFBSDB, predicted and experimental data
 - `EDA_Chang_Noordermeer_2021.Rmd` - Processing `Chang_Noordermeer_2021.xlsx`
 - `EDA_PWMScan.Rmd` - PWMScan analysis

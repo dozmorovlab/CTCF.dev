@@ -42,8 +42,8 @@ fileNameIn1 <- file.path(dir_data, "data/GRCh38-CTCF.bed")
 fileNameIn2 <- file.path(dir_data, "data/mm10-CTCF.bed")
 # download.file("https://api.wenglab.org/screen_v13/fdownloads/cCREs/mm10-CTCF.bed", fileNameIn2)
 # Output files
-fileNameOut1 <- file.path(dir_data, "results/CTCF_hg38_SCREEN.RData")
-fileNameOut2 <- file.path(dir_data, "results/CTCF_mm10_SCREEN.RData")
+fileNameOut1 <- file.path(dir_data, "results/hg38.SCREEN.GRCh38_CTCF.RData")
+fileNameOut2 <- file.path(dir_data, "results/mm10.SCREEN.mm10_CTCF.RData")
 ```
 
 PLS/pELS/dELS - Promoter-Like Signatures, proximal/distal Enhancer-Like Signatures
@@ -96,9 +96,16 @@ mtx_to_gr <- function(mtx = mtx_human, genome_id = "hg38") {
   return(gr)
 }
 
+hg38.SCREEN.GRCh38_CTCF <- mtx_to_gr(mtx = mtx_human, genome_id = "hg38")
+length(hg38.SCREEN.GRCh38_CTCF)
+summary(width(hg38.SCREEN.GRCh38_CTCF))
+mm10.SCREEN.mm10_CTCF <- mtx_to_gr(mtx = mtx_mouse, genome_id = "mm10")
+length(mm10.SCREEN.mm10_CTCF)
+summary(width(mm10.SCREEN.mm10_CTCF))
+
 # Save as RData object. subdir is the character name of the CTCF GRanges variable
-save(list = mtx_to_gr(mtx = mtx_human, genome_id = "hg38"), file = fileNameOut1)
-save(list = mtx_to_gr(mtx = mtx_mouse, genome_id = "mm10"), file = fileNameOut2)
+save(list = hg38.SCREEN.GRCh38_CTCF, file = fileNameOut1)
+save(list = mm10.SCREEN.mm10_CTCF, file = fileNameOut2)
 # load(file = paste0(subdir, ".RData"))
 ```
 
