@@ -26,6 +26,7 @@ library(tidyverse)
 library(readxl)
 library(writexl)
 library(GenomicRanges)
+library(rtracklayer)
 ```
 
 # Settings
@@ -43,7 +44,9 @@ fileNameIn2 <- file.path(dir_data, "data/mm10-CTCF.bed")
 # download.file("https://api.wenglab.org/screen_v13/fdownloads/cCREs/mm10-CTCF.bed", fileNameIn2)
 # Output files
 fileNameOut1 <- file.path(dir_data, "results/hg38.SCREEN.GRCh38_CTCF.RData")
+fileNameOut1.1 <- file.path(dir_data, "results/hg38.SCREEN.GRCh38_CTCF.bed")
 fileNameOut2 <- file.path(dir_data, "results/mm10.SCREEN.mm10_CTCF.RData")
+fileNameOut2.1 <- file.path(dir_data, "results/mm10.SCREEN.mm10_CTCF.bed")
 ```
 
 PLS/pELS/dELS - Promoter-Like Signatures, proximal/distal Enhancer-Like Signatures
@@ -107,5 +110,8 @@ summary(width(mm10.SCREEN.mm10_CTCF))
 save(list = hg38.SCREEN.GRCh38_CTCF, file = fileNameOut1)
 save(list = mm10.SCREEN.mm10_CTCF, file = fileNameOut2)
 # load(file = paste0(subdir, ".RData"))
+# Save BED files
+export.bed(hg38.SCREEN.GRCh38_CTCF, fileNameOut1.1)
+export.bed(mm10.SCREEN.mm10_CTCF, fileNameOut2.1)
 ```
 
