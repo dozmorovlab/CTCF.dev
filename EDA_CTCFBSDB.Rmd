@@ -26,6 +26,7 @@ library(tidyverse)
 library(readxl)
 library(writexl)
 library(GenomicRanges)
+library(rtracklayer)
 ```
 
 # Settings
@@ -41,6 +42,15 @@ fileNameIn1 <- file.path(dir_data, "data/allcomp.txt.gz")
 # Experimental data
 fileNameIn2 <- file.path(dir_data, "data/CTCFBSDB_all_exp_sites_Sept12_2012.txt.gz")
 # download.file("https://insulatordb.uthsc.edu/download/CTCFBSDB_all_exp_sites_Sept12_2012.txt.gz", fileNameIn2)
+# Output files
+fileNameOut1 <- file.path(dir_data, "results/hg19.CTCFBSDB.CTCF_predicted_human.RData")
+fileNameOut1.1 <- file.path(dir_data, "results/hg19.CTCFBSDB.CTCF_predicted_human.bed")
+fileNameOut2 <- file.path(dir_data, "results/mm9.CTCFBSDB.CTCF_predicted_mouse.RData")
+fileNameOut2.1 <- file.path(dir_data, "results/mm9.CTCFBSDB.CTCF_predicted_mouse.bed")
+# fileNameOut3 <- file.path(dir_data, "results/hg19.CTCFBSDB.CTCF_experimental_human.RData")
+# fileNameOut3.1 <- file.path(dir_data, "results/hg19.CTCFBSDB.CTCF_experimental_human.bed")
+# fileNameOut4 <- file.path(dir_data, "results/mm9.CTCFBSDB.CTCF_experimental_mouse.RData")
+# fileNameOut4.1 <- file.path(dir_data, "results/mm9.CTCFBSDB.CTCF_experimental_mouse.bed")
 ```
 
 # Load PREDICTED data
@@ -90,15 +100,25 @@ mtx_to_gr <- function(mtx = mtx_human, genome_id = "hg19") {
   return(gr)
 }
 
+hg19.CTCFBSDB.CTCF_predicted_human <- mtx_to_gr(mtx = mtx_human, genome_id = "hg38")
+length(hg19.CTCFBSDB.CTCF_predicted_human)
+summary(width(hg19.CTCFBSDB.CTCF_predicted_human))
+mm9.CTCFBSDB.CTCF_predicted_mouse <- mtx_to_gr(mtx = mtx_mouse, genome_id = "mm10")
+length(mm9.CTCFBSDB.CTCF_predicted_mouse)
+summary(width(mm9.CTCFBSDB.CTCF_predicted_mouse))
+
 # Save as RData object. subdir is the character name of the CTCF GRanges variable
-save(list = mtx_to_gr(mtx = mtx_human, genome_id = "hg19"), file = fileNameOut1)
-save(list = mtx_to_gr(mtx = mtx_mouse, genome_id = "mm9"), file = fileNameOut2)
+save(list = hg19.CTCFBSDB.CTCF_predicted_human, file = fileNameOut1)
+save(list = mm9.CTCFBSDB.CTCF_predicted_mouse, file = fileNameOut2)
 # load(file = paste0(subdir, ".RData"))
+# Save BED files
+export.bed(hg19.CTCFBSDB.CTCF_predicted_human, fileNameOut1.1)
+export.bed(mm9.CTCFBSDB.CTCF_predicted_mouse, fileNameOut2.1)
 ```
 
 # Load EXPERIMENTAL data
 
-```{r data}
+```{r eval=FALSE}
 # Read in data
 mtx <- read_tsv(fileNameIn2)
 ```
@@ -106,7 +126,7 @@ mtx <- read_tsv(fileNameIn2)
 
 ## EDA
 
-```{r}
+```{r eval=FALSE}
 # head(mtx, n = 100) %>% View()
 colnames(mtx)
 table(mtx$Species)
@@ -124,7 +144,7 @@ table(mtx$M1M2_class)
 
 ## GRanges
 
-```{r}
+```{r eval=FALSE}
 mtx_to_gr <- function(mtx = mtx, org = "Rhesus") {
   mtx_selected <- mtx[mtx$Species == org, ]
   gr <- GRanges(seqnames = mtx_selected$Chr, IRanges(start = mtx_selected$GenomeBeginLoc, end = mtx_selected$GenomeEndLoc))
@@ -164,17 +184,21 @@ mtx_to_gr <- function(mtx = mtx, org = "Rhesus") {
 }
 
 organisms <- unique(mtx$Species)
-organisms <- organisms[organisms != c("Rhesus")]
-for(i in organisms) {
-  print(i)
-  gr <- mtx_to_gr(mtx, org = i)
-  # Output files
-  fileNameOut1 <- file.path(dir_data, paste0("results/CTCF_", i, "_CTCFBSDB_experimental.RData"))
-  # Save as RData object. 
-  # save(list = mtx_to_gr(mtx = mtx_human, genome_id = "hg19"), file = fileNameOut1)
-}
+# organisms <- organisms[organisms != c("Rhesus")]
+# for(i in organisms) {
+#   print(i)
+#   gr <- mtx_to_gr(mtx, org = i)
+#   # Output files
+#   fileNameOut1 <- file.path(dir_data, paste0("results/CTCF_", i, "_CTCFBSDB_experimental.RData"))
+#   # Save as RData object. 
+#   # save(list = mtx_to_gr(mtx = mtx_human, genome_id = "hg19"), file = fileNameOut1)
+# }
 
 # load(file = paste0(subdir, ".RData"))
+
+hg18.CTCFBSDB.CTCF_experimental_human <- mtx_to_gr(mtx = mtx, org = "Human")
+length(hg18.CTCFBSDB.CTCF_experimental_human)
+summary(width(hg18.CTCFBSDB.CTCF_experimental_human))
 ```
 
 
