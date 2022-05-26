@@ -5,7 +5,7 @@ File name conventions: `<assembly>.<Database>.<original file name or label>`
     - Output: `hg38.SCREEN.GRCh38_CTCF`, `mm10.SCREEN.mm10_CTCF` granges objects and BED files
 - `EDA_CTCFBSDB.Rmd` - Processing CTCFBSDB, predicted data. Experimental data not used
     - Input: `allcomp.txt.gz`, predicted data
-    - Output: `hg19.CTCFBSDB.CTCF_predicted_human`, `mm9.CTCFBSDB.CTCF_predicted_mouse` granges objects and BED files
+    - Output: `hg18.CTCFBSDB.CTCF_predicted_human`, `mm8.CTCFBSDB.CTCF_predicted_mouse` granges objects and BED files
 - `EDA_Chang_Noordermeer_2021.Rmd` - Processing `Chang_Noordermeer_2021.xlsx`
 - `EDA_PWMScan.Rmd` - PWMScan analysis
 - `EDA_AnnotationHub.Rmd` - explore CTCF data on AnnotationHub and ExperimentHub
