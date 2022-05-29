@@ -1,11 +1,31 @@
 File name conventions: `<assembly>.<Database>.<original file name or label>`
 
+- `Logos.Rmd` - Logo clustering.
+    - Input: `/Users/mdozmorov/Documents/Data/GoogleDrive/CTCF.dev/motif_databases/*.meme` motif files
+    - Output: `Figure_clustered_main_PWMs.svg`
+    - Input: `/Users/mdozmorov/Documents/Data/GoogleDrive/CTCF.dev/Homo_sapiens_2022_05_20_3_16_pm/pwms_CTCF_motifs/CIS-BP_2.00_Homo_sapiens.meme`, created from combined .txt matrices
+    - Output: `CIS-BP_2.00_Homo_sapiens.svg`
+    - Input: `/Users/mdozmorov/Documents/Data/GoogleDrive/CTCF.dev/Mus_musculus_2022_05_20_4_01_pm/pwms_CTCF_motifs/CIS-BP_2.00_Mus_musculus.meme`, created from combined .txt matrices
+    - Output: `CIS-BP_2.00_Mus_musculus.svg`
+    - Input: `/Users/mdozmorov/Documents/Data/GoogleDrive/CTCF.dev/CTCFBSDB_PWM_corrected.meme`
+    - Output: `Figure_clustered_CTCFBSDB_PWMs.svg`
+
+- `EDA_liftOver.Rmd` - overlap between originally aligned and lifted-over genomes
+    - Input: BED files from `/Users/mdozmorov/Documents/Data/GoogleDrive/CTCF.dev/CTCF_liftover`. liftOver chains obtained using `download.sh`. Processed with `convert.sh`.
+    - Output: `Figure_liftOverJaccard.svg`
+
 - `EDA_SCREEN.Rmd` - Processing https://screen.encodeproject.org/. Basic stats, conversion to GRanges
     - Input: `GRCh38-CTCF.bed` and `mm10-CTCF.bed`
     - Output: `hg38.SCREEN.GRCh38_CTCF`, `mm10.SCREEN.mm10_CTCF` granges objects and BED files
+
 - `EDA_CTCFBSDB.Rmd` - Processing CTCFBSDB, predicted data. Experimental data not used
     - Input: `allcomp.txt.gz`, predicted data
     - Output: `hg18.CTCFBSDB.CTCF_predicted_human`, `mm8.CTCFBSDB.CTCF_predicted_mouse` granges objects and BED files
+
+- `FIMO_processing.Rmd` - Processing FIMO chromosome-specific results from merlot
+    - Input: `fimo.txt.gz` files from motif-, genome-, and chromosome-specific subfolders
+    - Output: `<assembly>.<Database>.FIMO` granges objects and BED file
+
 - `EDA_Chang_Noordermeer_2021.Rmd` - Processing `Chang_Noordermeer_2021.xlsx`
 - `EDA_PWMScan.Rmd` - PWMScan analysis
 - `EDA_AnnotationHub.Rmd` - explore CTCF data on AnnotationHub and ExperimentHub
@@ -15,7 +35,7 @@ File name conventions: `<assembly>.<Database>.<original file name or label>`
 - `Chang_Noordermeer_2021.xlsx` - CTCF clusters at TAD boundaries, over extended genomic intervals, CTCF clusters correlate with insulation score. Nano-C and 4C-seq on mESC cells, detailed dissection of CTCF clustering and contribution to domain boundary formation. [Supplementary material](https://www.biorxiv.org/content/10.1101/2021.04.15.440007v1.supplementary-material): CTCF ChIP-seq peaks in mESCs, over 83K peaks with at least one significant CTCF binding motif, mm10, Extended Data Table 1. 
     - Chang, Li-Hsin, Sourav Ghosh, Andrea Papale, Mélanie Miranda, Vincent Piras, Jéril Degrouard, Mallory Poncelet, et al. “[A Complex CTCF Binding Code Defines TAD Boundary Structure and Function](https://doi.org/10.1101/2021.04.15.440007).” Preprint. Genetics, April 15, 2021.
     
-- `allcomp.txt.gz`, `CTCFBSDB_all_exp_sites_Sept12_2012.txt.gz` - predicted/experimental CTCF sites from CTCFBSDB (https://insulatordb.uthsc.edu/download). hg19, mm9
+- `allcomp.txt.gz`, `CTCFBSDB_all_exp_sites_Sept12_2012.txt.gz` - predicted/experimental CTCF sites from CTCFBSDB (https://insulatordb.uthsc.edu/download). hg18, mm8
 
 - `genomewide_ctcf_motif_fimo` - Motif files can be downloaded from https://bcm.app.box.com/v/juicerawsmirror/folder/11363582187.
     - REN motifs http://www.sciencedirect.com/science/article/pii/S009286740700205X
@@ -47,7 +67,7 @@ File name conventions: `<assembly>.<Database>.<original file name or label>`
 - mm10.PWMScan.CIS_BP.CTCF_M6125_102 - 247201, 15bp
 
 
-
+T2T = GCA_009914755.4
 
 
 
