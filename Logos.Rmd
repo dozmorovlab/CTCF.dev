@@ -1,0 +1,320 @@
+---
+title: "Analysis"
+author: "Mikhail Dozmorov"
+date: "`r Sys.Date()`"
+output:
+  pdf_document:
+    toc: no
+  html_document:
+    theme: cerulean
+    toc: yes
+---
+
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
+# Set up the environment
+library(knitr)
+opts_chunk$set(cache.path='cache/', fig.path='img/', cache=F, tidy=T, fig.keep='high', echo=F, dpi=100, warnings=F, message=F, comment=NA, warning=F, results='as.is', fig.width = 10, fig.height = 6) #out.width=700, 
+library(pander)
+panderOptions('table.split.table', Inf)
+set.seed(1)
+```
+
+# Libraries
+
+```{r libraries}
+library(tidyverse)
+library(readxl)
+library(writexl)
+library(cowplot)
+library(stringr)
+library("ggsci")
+library(scales)
+# scales::show_col(pal_lancet("lanonc")(8))
+mycols = pal_lancet("lanonc")(8)
+library(motifStack)
+library(universalmotif)
+```
+
+# Settings
+
+```{r settings}
+# Project folder path
+dir_data <- "/Users/mdozmorov/Documents/Data/GoogleDrive/CTCF.dev/"
+```
+
+```{r}
+# Object to collect motifs
+motifs_all <- list()
+```
+
+# JASPAR 2022
+
+```{r fig.width = 6, fig.height = 4}
+# Input files
+fileNameIn1 <- file.path(dir_data, "motif_databases/JASPAR2022_CORE_vertebrates_non-redundant_v2.meme")
+# Output files
+fileNameOut1 <- file.path(dir_data, "motif_databases/JASPAR2022_CORE_vertebrates_non-redundant_v2.svg")
+# Read in data
+motifs <- importMatrix(fileNameIn1)
+# plot(motifs[[1]])
+motifStack(motifs)
+dev.off()
+svg(fileNameOut1, width = 6, height = 4)
+motifStack(motifs)
+dev.off()
+# Standardize names
+names(motifs) <- paste("JASPAR2022", "CORE", "vertebrates", "CTCF", names(motifs) %>% str_remove(., ".CTCF"), sep = "_")
+# Append to the whole list
+motifs_all <- c(motifs_all, motifs)
+```
+
+# HOCOMOCO v11
+
+```{r fig.width = 6, fig.height = 2}
+# Input files
+fileNameIn1 <- file.path(dir_data, "motif_databases/HOCOMOCOv11_core_HUMAN_mono_meme_format.meme")
+# Output files
+fileNameOut1 <- file.path(dir_data, "motif_databases/HOCOMOCOv11_core_HUMAN_mono_meme_format.svg")
+# Read in data
+motifs <- importMatrix(fileNameIn1)
+plot(motifs[[1]])
+dev.off()
+svg(fileNameOut1, width = 6, height = 2)
+plot(motifs[[1]])
+dev.off()
+# Standardize names
+names(motifs) <- paste("HOCOMOCO_v11", "core", "HUMAN", "CTCF", names(motifs) %>% str_remove(., "CTCF_HUMAN."), sep = "_")
+# Append to the whole list
+motifs_all <- c(motifs_all, motifs)
+```
+
+```{r fig.width = 6, fig.height = 2}
+# Input files
+fileNameIn1 <- file.path(dir_data, "motif_databases/HOCOMOCOv11_core_MOUSE_mono_meme_format.meme")
+# Output files
+fileNameOut1 <- file.path(dir_data, "motif_databases/HOCOMOCOv11_core_MOUSE_mono_meme_format.svg")
+# Read in data
+motifs <- importMatrix(fileNameIn1)
+plot(motifs[[1]])
+dev.off()
+svg(fileNameOut1, width = 6, height = 2)
+plot(motifs[[1]])
+dev.off()
+# Standardize names
+names(motifs) <- paste("HOCOMOCO_v11", "core", "MOUSE", "CTCF", names(motifs) %>% str_remove(., "CTCF_MOUSE."), sep = "_")
+# Append to the whole list
+motifs_all <- c(motifs_all, motifs)
+```
+
+# SwissRegulon
+
+```{r fig.width = 6, fig.height = 2}
+# Input files
+fileNameIn1 <- file.path(dir_data, "motif_databases/SwissRegulon_human_and_mouse.meme")
+# Output files
+fileNameOut1 <- file.path(dir_data, "motif_databases/SwissRegulon_human_and_mouse.svg")
+# Read in data
+motifs <- importMatrix(fileNameIn1)
+plot(motifs[[1]])
+dev.off()
+svg(fileNameOut1, width = 6, height = 2)
+plot(motifs[[1]])
+dev.off()
+# Standardize names
+names(motifs) <- paste("SwissRegulon", "HUMAN_MOUSE", "CTCF", names(motifs) %>% str_remove(., "CTCF.") %>% str_remove(., fixed(".")), sep = "_")
+# Append to the whole list
+motifs_all <- c(motifs_all, motifs)
+```
+
+# Jomla 2013
+
+Needs to be reverse complement
+
+```{r fig.width = 6, fig.height = 2}
+# Input files
+fileNameIn1 <- file.path(dir_data, "motif_databases/jolma2013.meme")
+# Output files
+fileNameOut1 <- file.path(dir_data, "motif_databases/jolma2013.svg")
+# Reverse complement
+fileNameOut2 <- file.path(dir_data, "motif_databases/jolma2013_RC.meme")
+# Read in data
+motifs <- importMatrix(fileNameIn1)
+# Reverse complement
+motifs_RC <- motif_rc(motifs[[1]])
+plot(motifs_RC)
+dev.off()
+svg(fileNameOut1, width = 6, height = 2)
+plot(motifs[[1]])
+dev.off()
+# Save Reverse complement
+write_meme(motifs_RC, fileNameOut2)
+# Standardize names
+motifs_RC@name <- names(motifs) %>% str_remove(., fixed(".")) # paste("Jomla2013", "HUMAN_MOUSE", "HT_SELEX", "CTCF", names(motifs) %>% str_remove(., "CTCF_") %>% str_remove(., fixed(".")), sep = "_")
+# Append to the whole list
+motifs_all <- c(motifs_all, motifs_RC)
+```
+
+# Clustering
+
+```{r}
+## plot stacks with hierarchical tree
+motifStack(motifs_all, layout="tree") 
+# Output files
+fileNameOut1 <- file.path(dir_data, "motif_databases/Figure_clustered_main_PWMs.svg")
+dev.off()
+svg(fileNameOut1, width = 8, height = 8)
+motifStack(motifs_all, layout="tree") 
+dev.off()
+```
+
+# CIS_BP Homo Sapiens
+
+```{r}
+# Modify input dir
+dir_data1 <- file.path(dir_data, "Homo_sapiens_2022_05_20_3_16_pm/pwms_CTCF_motifs")
+files <- list.files(dir_data1, pattern = "*.txt", full.names = TRUE)
+# Output file
+fileNameOut1 <- file.path(dir_data1, "CIS-BP_2.00_Homo_sapiens.meme")
+fileNameOut2 <- file.path(dir_data1, "CIS-BP_2.00_Homo_sapiens.svg")
+# Standard header
+write_lines("MEME version 5.4.1 (Tue Mar 1 19:18:48 2022 -0800)", file = fileNameOut1)
+write_lines("ALPHABET= ACGT", file = fileNameOut1, append = TRUE)
+write_lines("strands: + -", file = fileNameOut1, append = TRUE)
+write_lines("Background letter frequencies (from uniform background):", file = fileNameOut1, append = TRUE)
+write_lines("A 0.25000 C 0.25000 G 0.25000 T 0.25000 ", file = fileNameOut1, append = TRUE)
+# Store number of bases
+nsites <- c()
+for(i in 1:length(files)) {
+  file=files[i]
+  # Make motif name
+  motif_name <- basename(file) %>% str_remove(., ".txt")
+  mtx <- read_tsv(file, col_types = c("ccccc"))
+  # If non-empty, proceed
+  if (nrow(mtx) > 0) {
+    # Collect number of bases
+    nsites <- c(nsites, nrow(mtx))
+    # Motif name
+    write_lines(paste0("MOTIF ", motif_name), file = fileNameOut1, append = TRUE)
+    # Header line
+    header_line <- paste0("letter-probability matrix: alength= 4 w= ", nrow(mtx), " nsites= 20 E= 0")
+    write_lines(header_line, file = fileNameOut1, append = TRUE)
+    # Make first numerical column empty
+    mtx$Pos <- ""
+    # Write actual data
+    write_tsv(mtx, file = fileNameOut1, col_names = FALSE, append = TRUE)
+    # Separate from the next motif
+    write_lines("", file = fileNameOut1, append = TRUE)
+  }
+}
+print("Number of motifs")
+print(length(nsites))
+print("Summary of motif widths")
+summary(nsites)
+# Test if can be imported
+motifs_all <- importMatrix(fileNameOut1)
+if (!file.exists(fileNameOut2)) {
+  dev.off()
+  svg(fileNameOut2, width = 8, height = 78)
+  motifStack(motifs_all, layout="tree") 
+  dev.off()
+}
+```
+
+# CIS_BP Mus Musculus
+
+```{r}
+# Modify input dir
+dir_data1 <- file.path(dir_data, "Mus_musculus_2022_05_20_4_01_pm/pwms_CTCF_motifs")
+files <- list.files(dir_data1, pattern = "*.txt", full.names = TRUE)
+# Output file
+fileNameOut1 <- file.path(dir_data1, "CIS-BP_2.00_Mus_musculus.meme")
+fileNameOut2 <- file.path(dir_data1, "CIS-BP_2.00_Mus_musculus.svg")
+# Standard header
+write_lines("MEME version 5.4.1 (Tue Mar 1 19:18:48 2022 -0800)", file = fileNameOut1)
+write_lines("ALPHABET= ACGT", file = fileNameOut1, append = TRUE)
+write_lines("strands: + -", file = fileNameOut1, append = TRUE)
+write_lines("Background letter frequencies (from uniform background):", file = fileNameOut1, append = TRUE)
+write_lines("A 0.25000 C 0.25000 G 0.25000 T 0.25000 ", file = fileNameOut1, append = TRUE)
+# Store number of bases
+nsites <- c()
+for(i in 1:length(files)) {
+  file=files[i]
+  # Make motif name
+  motif_name <- basename(file) %>% str_remove(., ".txt")
+  mtx <- read_tsv(file, col_types = c("ccccc"))
+  # If non-empty, proceed
+  if (nrow(mtx) > 0) {
+    # Collect number of bases
+    nsites <- c(nsites, nrow(mtx))
+    # Motif name
+    write_lines(paste0("MOTIF ", motif_name), file = fileNameOut1, append = TRUE)
+    # Header line
+    header_line <- paste0("letter-probability matrix: alength= 4 w= ", nrow(mtx), " nsites= 20 E= 0")
+    write_lines(header_line, file = fileNameOut1, append = TRUE)
+    # Make first numerical column empty
+    mtx$Pos <- ""
+    # Write actual data
+    write_tsv(mtx, file = fileNameOut1, col_names = FALSE, append = TRUE)
+    # Separate from the next motif
+    write_lines("", file = fileNameOut1, append = TRUE)
+  }
+}
+print("Number of motifs")
+print(length(nsites))
+print("Summary of motif widths")
+summary(nsites)
+# Test if can be imported
+motifs_all <- importMatrix(fileNameOut1)
+if (!file.exists(fileNameOut2)) {
+  dev.off()
+  svg(fileNameOut2, width = 8, height = 2.5)
+  motifStack(motifs_all, layout="tree") 
+  dev.off()
+}
+```
+
+# CTCFBSDB
+
+EMBL_M1 needs to be reverse complement
+
+```{r}
+fileNameIn1 <- file.path(dir_data, "CTCFBSDB_PWM.meme")
+# Reverse complement
+fileNameOut1 <- file.path(dir_data, "CTCFBSDB_PWM_corrected.meme")
+# Read in data
+motifs <- importMatrix(fileNameIn1)
+# Correct EMBL_M1
+motifs[[1]] <- motif_rc(motifs[[1]])
+# Save the corrected matrix
+write_meme(motifs, fileNameOut1)
+# Plot
+motifStack(motifs, layout="tree")
+# Output files
+fileNameOut1 <- file.path(dir_data, "motif_databases/Figure_clustered_CTCFBSDB_PWMs.svg")
+dev.off()
+svg(fileNameOut1, width = 8, height = 8)
+motifStack(motifs, layout="tree") 
+dev.off()
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
