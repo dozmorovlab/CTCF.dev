@@ -1,0 +1,200 @@
+---
+title: "Analysis"
+author: "Mikhail Dozmorov"
+date: "`r Sys.Date()`"
+output:
+  pdf_document:
+    toc: no
+  html_document:
+    theme: cerulean
+    toc: yes
+---
+
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
+# Set up the environment
+library(knitr)
+opts_chunk$set(cache.path='cache/', fig.path='img/', cache=F, tidy=T, fig.keep='high', echo=F, dpi=100, warnings=F, message=F, comment=NA, warning=F, results='as.is', fig.width = 10, fig.height = 6) #out.width=700, 
+library(pander)
+panderOptions('table.split.table', Inf)
+set.seed(1)
+```
+
+# Libraries
+
+```{r libraries}
+library(tidyverse)
+library(readxl)
+library(writexl)
+library(cowplot)
+library(stringr)
+library("ggsci")
+library(scales)
+# scales::show_col(pal_lancet("lanonc")(8))
+mycols = pal_lancet("lanonc")(8)
+library(pheatmap)
+# Color palette for the heatmap, https://www.nceas.ucsb.edu/~frazier/RSpatialGuides/colorPaletteCheatsheet.pdf
+col3 <- colorRampPalette(c('blue', 'white', 'red'))(20)
+# col3 <- colorRampPalette(c('blue', 'gray', 'yellow'))(20)
+# col3 <- colorRampPalette(c('green', 'black', 'red'))(20)
+# col3 <- colorRamps::green2red(n = 20)
+library(rtracklayer)
+```
+
+# Settings
+
+```{r settings}
+# Project folder path
+dir_data <- "/Users/mdozmorov/Documents/Data/GoogleDrive/CTCF.dev/CTCF_liftover/"
+
+# Input files
+fileNameIn1 <- file.path(dir_data, "sample_annotation.csv")
+# Output files
+fileNameOut1 <- file.path(dir_data, "Figure_liftOverJaccard.svg")
+```
+
+# Load data
+
+```{r data}
+sample_annotation <- read_csv(fileNameIn1)
+# Read in data
+files <- sample_annotation$File
+genome_assembly <- sample_annotation$Assembly
+# Object to store GRanges 
+bed_list_all <- list() # All chromosomes
+bed_list_standard <- list() # Standard chromosomes
+# Additional columns
+# extraCols_names <- c("character", "character", "character")
+# names(extraCols_names) <- c("motif", "pval", "qval")
+# Process each file
+for(i in 1:length(files)) {
+  print(basename(files[i]))
+  # Read data
+  bed_file <- import(file.path(dir_data, "data", files[i]), format = "bed") # , genome = genome_assembly[i], colnames = c("chrom", "start", "end", "name", "score", "strand", "motif", "pval", "qval"), extraCols = extraCols_names
+  # Save all data
+  bed_list_all <- c(bed_list_all, list(bed_file))
+  # Keep standard chromosomes
+  bed_file_standard <- keepStandardChromosomes(bed_file, pruning.mode="coarse")
+  # Save filtered data
+  bed_list_standard <- c(bed_list_standard, list(bed_file_standard))
+}
+# Add names
+names(bed_list_all) <- sample_annotation$Name
+names(bed_list_standard) <- sample_annotation$Name
+```
+
+## Jaccard / GenometriCorr
+
+```{r jaccard, warning=FALSE, fig.width=6.5, fig.height=6}
+save_pheatmap_svg <- function(x, filename, width=4.5, height=3, units = "in", res = 300) {
+  stopifnot(!missing(x))
+  stopifnot(!missing(filename))
+  svg(filename, width=width, height=height)
+  grid::grid.newpage()
+  grid::grid.draw(x$gtable)
+  dev.off()
+}
+# Jaccard calculations
+jaccard <- function(gr_a, gr_b) {
+  intersects <- GenomicRanges::intersect(gr_a, gr_b, ignore.strand = TRUE)
+  intersection <- sum(width(intersects))
+  union <- sum(width(GenomicRanges::union(gr_a, gr_b, ignore.strand = TRUE)))
+  DataFrame(intersection, union, 
+            jaccard = intersection/union,
+             n_intersections = length(intersects))
+}
+# GenometriCorr of smaller query vs. larger reference
+# Returns either Jaccard or ECDF area correlation
+GCorr <- function(gr1, gr2, return_value = "relative.distances.ecdf.area.correlation") {
+  # Select smaller query and larger reference
+  # GenometriCorr itselv
+  gr1_vs_gr2 <- GenometriCorrelation(query, reference, awhole.only = TRUE, showProgressBar = FALSE, permut.number = 0)
+  # What to return
+  if (return_value == "relative.distances.ecdf.area.correlation") {
+    return(gr1_vs_gr2$awhole$relative.distances.ecdf.area.correlation)
+  }
+  if (return_value == "jaccard.measure") {
+    return(gr1_vs_gr2$awhole$jaccard.measure)
+  }
+}
+
+# Correlation matrix, empty
+mtx_to_plot <- matrix(data = 0, nrow = length(bed_list_standard), ncol = length(bed_list_standard))
+# Fill it in
+for (i in 1:length(bed_list_standard)) {
+  for (j in 1:length(bed_list_standard)) {
+    # If diagonal, set to zero
+    if (i == j) mtx_to_plot[i, j] <- 1
+    # Process only one half, the other is symmetric
+    if (i > j) {
+      gr1 <- bed_list_standard[[i]]
+      gr2 <- bed_list_standard[[j]]
+      # Jaccard
+      query <- gr1
+      reference <- gr2
+      mtx_to_plot[i, j] <- mtx_to_plot[j, i] <- jaccard(query, reference)[["jaccard"]]
+      # GenometriCorr
+      # if (length(gr1) >= length(gr2)) {
+      #   reference <- gr1
+      #   query <- gr2
+      # } else {
+      #   reference <- gr2
+      #   query <- gr1
+      # }
+      # mtx_to_plot[i, j] <- mtx_to_plot[j, i] <- GCorr(query, reference)
+    }
+  }
+}
+
+# Trim row/colnames
+rownames(mtx_to_plot) <- colnames(mtx_to_plot) <- str_trunc(names(bed_list_standard), width = 25) 
+```
+
+# Pheatmap
+
+```{r}
+# Adjust clustering method
+# if(genome_assembly == "hg38") {
+#   clust_method <- "euclidean"
+# }
+# if(genome_assembly == "mm10") {
+#   clust_method <- "correlation"
+# }
+clust_method <- "euclidean"
+# Save the plot
+col3 <- colorRampPalette(c('white', 'white','white','white','white','white','white','orangered'))(20)
+# all.equal(colnames(mtx_to_plot), sample_annotation$Name)
+mydf <- data.frame(Assembly = sample_annotation$Assembly)
+rownames(mydf) <- sample_annotation$Name
+# png("man/figures/excluderanges_hg38_jaccard.png", width = 1000, height = 900, res = 200)
+p <- pheatmap(data.matrix(mtx_to_plot), cluster_cols = T, cluster_rows = T, color = col3,
+         clustering_method = "ward.D",# "ward.D", 
+         clustering_distance_rows = clust_method, 
+         clustering_distance_cols = clust_method, 
+         annotation_row = mydf, annotation_colors = list(Assembly = c(hg18 = mycols[2], hg19 = mycols[4], hg38 = mycols[5], T2T = mycols[1])),
+         treeheight_row = 40,
+         treeheight_col = 0, 
+         display_numbers = TRUE)
+
+# mtx_to_barplot <- data.frame(hg19 = mtx_to_plot["hg19", "hg19 (from hg38)"],
+#                              hg38 = mtx_to_plot["hg38", "hg38 (from hg19)"],
+#                              T2T = mtx_to_plot["T2T (from hg19)", "T2T (from hg38)"])
+# mtx_to_barplot <- mtx_to_barplot %>% pivot_longer(., cols = everything(), names_to = "Assembly", values_to = "Jaccard")
+# mtx_to_barplot$Assembly <- c("hg19 vs.\nhg19 from hg38", "hg38 vs.\nhg38 from hg19", "T2T from hg19 vs.\nT2T from hg38")
+# mtx_to_barplot$Assembly <- factor(mtx_to_barplot$Assembly, levels = rev(mtx_to_barplot$Assembly))
+# ggplot(mtx_to_barplot, aes(x = Assembly, y = Jaccard, fill = Assembly)) +
+#   geom_bar(stat = "identity") +
+#   coord_flip() +
+#   theme_bw(base_size = 15) +
+#   # get rid of the grid 
+#   theme(panel.grid.major = element_blank(), 
+#         panel.grid.minor = element_blank(), 
+#         text = element_text(size = 15),
+#         legend.position = "none") + # c(0.8, 0.30)
+#   scale_fill_manual(values = mycols[1:3]) + # change colors 
+#   xlab("Assembly") +
+#   ylab("Jaccard") 
+
+save_pheatmap_svg(p, filename = fileNameOut1, width = 7.5, height = 5.5, units = "in", res = 300)
+# dev.off()
+```
+
