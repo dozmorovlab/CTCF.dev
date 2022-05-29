@@ -1,0 +1,175 @@
+---
+title: "Analysis"
+author: "Mikhail Dozmorov"
+date: "`r Sys.Date()`"
+output:
+  pdf_document:
+    toc: no
+  html_document:
+    theme: cerulean
+    toc: yes
+---
+
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
+# Set up the environment
+library(knitr)
+opts_chunk$set(cache.path='cache/', fig.path='img/', cache=F, tidy=T, fig.keep='high', echo=F, dpi=100, warnings=F, message=F, comment=NA, warning=F, results='as.is', fig.width = 10, fig.height = 6) #out.width=700, 
+library(pander)
+panderOptions('table.split.table', Inf)
+set.seed(1)
+```
+
+# Libraries
+
+```{r libraries}
+library(tidyverse)
+library(readxl)
+library(writexl)
+library(cowplot)
+library(stringr)
+library("ggsci")
+library(scales)
+# scales::show_col(pal_lancet("lanonc")(8))
+mycols = pal_lancet("lanonc")(8)
+library(GenomicRanges)
+library(rtracklayer)
+```
+
+# Settings
+
+```{r settings}
+# Project folder path
+dir_data <- "/Users/mdozmorov/Documents/Data/GoogleDrive/CTCF.dev/merlot"
+# Motifs
+motif_human  <- c("CIS_BP_2.00_Homo_sapiens", "CTCFBSDB_PWM_corrected", "HOCOMOCOv11_core_HUMAN_mono_meme_format", "JASPAR2022_CORE_vertebrates_non_redundant_v2", "jolma2013_corrected", "SwissRegulon_human_and_mouse")
+motif_mouse  <- c("CIS_BP_2.00_Mus_musculus", "CTCFBSDB_PWM_corrected", "HOCOMOCOv11_core_MOUSE_mono_meme_format", "JASPAR2022_CORE_vertebrates_non_redundant_v2", "jolma2013_corrected", "SwissRegulon_human_and_mouse")
+# Genomes
+genome_human <- c("T2T", "hg38", "hg19")
+genome_mouse <- c("mm10", "mm9")
+# Chromosomes
+chromosome_human <- c("chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12", "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr19", "chr20", "chr21", "chr22", "chrX", "chrY")
+chromosome_mouse <- c("chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12", "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr19", "chrX", "chrY")
+
+# Input files
+fileNameIn1 <- file.path(dir_data, "")
+# Output files
+fileNameOut1 <- file.path(dir_data, "")
+```
+
+# Process data
+
+```{r data}
+combine_fimo <- function(motif = "SwissRegulon_human_and_mouse", genome_id = "T2T", chromosomes = chromosome_human) {
+  ctcfGR <- c()
+  for(chrom in chromosomes) {
+    # print(chrom)
+    fileNameIn <- file.path(dir_data, paste(motif, genome_id, chrom, sep = "_"), "fimo.txt.gz")
+    # Read "fimo.bed" created by "fimo.qsub"
+    ctcfBED <- read_tsv(fileNameIn, col_types = c("ccddcdddc"))
+    # Convert to GRanges object
+    ctcf_chr_gr <- GRanges(seqnames = ctcfBED$`sequence name`, 
+                      IRanges(start = ctcfBED$start, end = ctcfBED$stop),
+                      strand = ctcfBED$strand)
+    # Add metadata
+    ctcf_chr_gr$score = ctcfBED$score
+    ctcf_chr_gr$pvalue = ctcfBED$`p-value`
+    ctcf_chr_gr$qvalue = ctcfBED$`q-value`
+    ctcf_chr_gr$sequence = ctcfBED$`matched sequence`
+    ctcfGR <- c(ctcfGR, ctcf_chr_gr)
+  }
+  # Combine all chromosomes
+  ctcfGR <- do.call(c, as(ctcfGR, "GRangesList"))
+  # Sort
+  ctcfGR <- ctcfGR %>% sort()
+  
+  # Add seqinfo
+  # Parse out genome ID from the folder name, to get hg19, hg38, mm9, or mm10
+  if (genome_id == "T2T") {
+    # Seqinfor for T2T genome
+    chrom_data <- GenomeInfoDb::getChromInfoFromNCBI(assembly = "GCA_009914755.4")
+    chrom_data$AssignedMolecule <- as.character(paste0("chr", chrom_data$AssignedMolecule))
+    chrom_data <- chrom_data[chrom_data$AssignedMolecule %in% seqlevels(ctcfGR), ]
+    chrom_data <- chrom_data[match(seqlevels(ctcfGR), chrom_data$AssignedMolecule), ]
+    # Check if chromosome order is the same
+    if (!all.equal(seqlevels(ctcfGR), chrom_data$AssignedMolecule)) {
+      print(paste("Chromosome order does not match for", genome_id, "genome."))
+      break
+    }
+    # Assign seqinfo data
+    seqlengths(ctcfGR) <- chrom_data$SequenceLength
+    isCircular(ctcfGR) <- ifelse(is.na(chrom_data$circular), FALSE, TRUE)
+    genome(ctcfGR)     <- "GCA_009914755.4"
+  } else {
+    # Get chromosome info and match it to the chromosome order in ctcfBED
+    chrom_data <- GenomeInfoDb::getChromInfoFromUCSC(genome = genome_id)
+    chrom_data <- chrom_data[chrom_data$chrom %in% seqlevels(ctcfGR), ]
+    chrom_data <- chrom_data[match(seqlevels(ctcfGR), chrom_data$chrom), ]
+    # Check if chromosome order is the same
+    if (!all.equal(seqlevels(ctcfGR), chrom_data$chrom)) {
+      print(paste("Chromosome order does not match for", genome_id, "genome."))
+      break
+    }
+    # Assign seqinfo data
+    seqlengths(ctcfGR) <- chrom_data$size
+    isCircular(ctcfGR) <- chrom_data$circular
+    genome(ctcfGR)     <- genome_id
+  }
+
+  ctcfGR_to_save <- paste(genome_id, motif, "FIMO", sep = ".")
+  fileNameOut1 <- file.path(dir_data, paste0(ctcfGR_to_save, ".RData"))
+  fileNameOut1.1 <- file.path(dir_data, paste0(ctcfGR_to_save, ".bed"))
+  # Assign this object to the subfolder-specific variable name
+  assign(ctcfGR_to_save, ctcfGR)
+  # Save as RData object. ctcfGR_to_save is the character name of the CTCF GRanges variable
+  save(list = ctcfGR_to_save, file = fileNameOut1)
+  # load(file = fileNameOut1)
+  export.bed(eval(parse(text = ctcfGR_to_save)), fileNameOut1.1)
+  # Summary
+  # Width
+  summary_gr <- summary(width(eval(parse(text = ctcfGR_to_save))))
+  # All summary
+  summary_to_save <- data.frame(File = ctcfGR_to_save,
+                                N = length(width(eval(parse(text = ctcfGR_to_save)))), 
+                                Min = as.numeric(summary_gr["Min."]), 
+                                Median = as.numeric(summary_gr["Median"]), 
+                                Mean = as.numeric(summary_gr["Mean"]), 
+                                Max = as.numeric(summary_gr["Max."]))
+  fileNameLog <- file.path(dir_data, "log_PWMs.csv")
+  write_csv(summary_to_save, fileNameLog, append = TRUE)
+}
+```
+
+# Human data hg18
+
+```{r hg18}
+for (gen in c("hg18", genome_human)) {
+  for (mot in "MA0139.1") {
+    print(paste(gen, mot, sep = "."))
+    combine_fimo(motif = mot, genome_id = gen, chromosomes = chromosome_human)
+  }
+}
+```
+
+# Human data all
+
+```{r hgall}
+# motif_human  <- c("CTCFBSDB_PWM_corrected", "HOCOMOCOv11_core_HUMAN_mono_meme_format", "JASPAR2022_CORE_vertebrates_non-redundant_v2", "jolma2013_corrected", "SwissRegulon_human_and_mouse")
+for (gen in genome_human) {
+  for (mot in motif_human) {
+    print(paste(gen, mot, sep = "."))
+    combine_fimo(motif = mot, genome_id = gen, chromosomes = chromosome_human)
+  }
+}
+```
+
+# Mouse data all
+
+```{r mmall}
+for (gen in genome_mouse) {
+  for (mot in motif_mouse) {
+    print(paste(gen, mot, sep = "."))
+    combine_fimo(motif = mot, genome_id = gen, chromosomes = chromosome_mouse)
+  }
+}
+```
+
