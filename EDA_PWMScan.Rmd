@@ -13,7 +13,7 @@ output:
 ```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
 # Set up the environment
 library(knitr)
-opts_chunk$set(cache.path='cache/', fig.path='img/', cache=T, tidy=T, fig.keep='high', echo=F, dpi=100, warnings=F, message=F, comment=NA, warning=F, results='as.is', fig.width = 10, fig.height = 6) #out.width=700, 
+opts_chunk$set(cache.path='cache/', fig.path='img/', cache=F, tidy=T, fig.keep='high', echo=F, dpi=100, warnings=F, message=F, comment=NA, warning=F, results='as.is', fig.width = 10, fig.height = 6) #out.width=700, 
 library(pander)
 panderOptions('table.split.table', Inf)
 set.seed(1)
@@ -43,22 +43,24 @@ library(GenometriCorr)
 
 ```{r settings}
 # Project folder path
-dir_data <- "/Users/mdozmorov/Documents/Work/GitHub/CTCF.dev/data/PWMscan/"
+dir_data <- "/Users/mdozmorov/Documents/Work/GitHub/CTCF.dev/"
 # Genome assembly
-# genome_assembly <- "hg38"
+genome_assembly <- "hg38"
 genome_assembly <- "mm10"
 
 # Input files
 fileNameIn1 <- file.path(dir_data, "")
 # Output files
-fileNameOut1 <- file.path(dir_data, "")
+fileNameOut1 <- file.path(dir_data, paste0("results/Table_stats_", genome_assembly, ".csv"))
+fileNameOut2 <- file.path(dir_data, paste0("results/Figure_stats_", genome_assembly, ".svg"))
+fileNameOut3 <- file.path(dir_data, paste0("results/Figure_jaccard_", genome_assembly, ".svg"))
 ```
 
 # Load data
 
 ```{r data}
 # Read in data
-files <- list.files(path = dir_data, pattern = genome_assembly, full.names = TRUE)
+files <- list.files(path = file.path(dir_data, "data/PWMscan/"), pattern = genome_assembly, full.names = TRUE)
 # Object to store GRanges 
 bed_list_all <- list() # All chromosomes
 bed_list_standard <- list() # Standard chromosomes
@@ -96,6 +98,11 @@ for(i in 1:length(bed_list_standard)) {
 mtx_to_plot <- data.frame(Number = c(stats_number_pos, stats_number_neg), 
                           List = c(names(bed_list_standard), names(bed_list_standard)), 
                           Strand = c(rep("+", length(stats_number_pos)), rep("-", length(stats_number_neg))))
+# Wide format for saving
+mtx_to_save <- pivot_wider(mtx_to_plot, names_from = "Strand", values_from = "Number")
+mtx_to_save <- mtx_to_save %>% mutate(Total = `+` + `-`, .after = List) %>% arrange(desc(Total))
+colnames(mtx_to_save) <- c("Database", "Total CTCF motifs", "Positive strand", "Negative strand")
+write_csv(mtx_to_save, fileNameOut1)
 
 stats_number_total <- aggregate(mtx_to_plot$Number, list(mtx_to_plot$List), sum)
 colnames(stats_number_total) <- c("List", "Total")
@@ -113,6 +120,7 @@ ggplot(mtx_to_plot, aes(x = List, y = Number, fill = Strand)) +
   xlab("Database") +
   ylab("Number of motifs") +
   ggtitle(paste(genome_assembly, "genome assembly"))
+ggsave(fileNameOut2, width = 10, height = 3)
 ```
 
 ## Chromosome-specific Number
@@ -149,7 +157,7 @@ for(i in 1: length(bed_list_standard)) {
 wrap_plots(p_list, nrow = length(p_list))
 ```
 
-## Jaccard
+## Jaccard / GenometriCorr
 
 ```{r jaccard, warning=FALSE, fig.width=6.5, fig.height=6}
 save_pheatmap_svg <- function(x, filename, width=4.5, height=3, units = "in", res = 300) {
@@ -169,60 +177,10 @@ jaccard <- function(gr_a, gr_b) {
             jaccard = intersection/union,
              n_intersections = length(intersects))
 }
-# Correlation matrix, empty
-mtx_to_plot <- matrix(data = 0, nrow = length(bed_list_standard), ncol = length(bed_list_standard))
-# Fill it in
-for (i in 1:length(bed_list_standard)) {
-  for (j in 1:length(bed_list_standard)) {
-    # If diagonal, set to zero
-    if (i == j) mtx_to_plot[i, j] <- 0
-    # Process only one half, the other is symmetric
-    if (i > j) {
-      # mtx_to_plot[i, j] <- mtx_to_plot[j, i] <- jaccard(bed_list_standard[[i]], bed_list_standard[[j]])[["jaccard"]]
-      mtx_to_plot[i, j] <- mtx_to_plot[j, i] <- GCorr(bed_list_standard[[i]], bed_list_standard[[j]])
-    }
-  }
-}
-# Trim row/colnames
-rownames(mtx_to_plot) <- colnames(mtx_to_plot) <- str_trunc(names(bed_list_standard), width = 25) 
-# Save the plot
-# png("man/figures/excluderanges_hg38_jaccard.png", width = 1000, height = 900, res = 200)
-if(genome_assembly == "hg38") {
-  clust_method <- "euclidean"
-}
-if(genome_assembly == "mm10") {
-  clust_method <- "correlation"
-}
-pheatmap(data.matrix(mtx_to_plot), cluster_cols = T, cluster_rows = T,
-         clustering_method = "ward.D", 
-         clustering_distance_rows = clust_method, 
-         clustering_distance_cols = clust_method, 
-         # annotation_row = mydf, annotation_colors = list(Group = c(PR = mycols[1], CR = mycols[2])),
-         treeheight_row = 40,
-         treeheight_col = 0, 
-         display_numbers = TRUE)
-# dev.off()
-```
-
-## GenometriCorr
-
-```{r}
-# CIS-BP
-gr1 <- bed_list_standard[[1]][seqnames(bed_list_standard[[1]]) == "chr1"]
-gr2 <- bed_list_standard[[5]][seqnames(bed_list_standard[[5]]) == "chr1"]
-
-
 # GenometriCorr of smaller query vs. larger reference
 # Returns either Jaccard or ECDF area correlation
 GCorr <- function(gr1, gr2, return_value = "relative.distances.ecdf.area.correlation") {
   # Select smaller query and larger reference
-  if (length(gr1) >= length(gr2)) {
-    reference <- gr1
-    query <- gr2
-  } else {
-    reference <- gr2
-    query <- gr1
-  }
   # GenometriCorr itselv
   gr1_vs_gr2 <- GenometriCorrelation(query, reference, awhole.only = TRUE, showProgressBar = FALSE, permut.number = 0)
   # What to return
@@ -234,6 +192,73 @@ GCorr <- function(gr1, gr2, return_value = "relative.distances.ecdf.area.correla
   }
 }
 
+# Correlation matrix, empty
+mtx_to_plot <- matrix(data = 0, nrow = length(bed_list_standard), ncol = length(bed_list_standard))
+# Fill it in
+for (i in 1:length(bed_list_standard)) {
+  for (j in 1:length(bed_list_standard)) {
+    # If diagonal, set to zero
+    if (i == j) mtx_to_plot[i, j] <- 0
+    # Process only one half, the other is symmetric
+    if (i > j) {
+      gr1 <- bed_list_standard[[i]]
+      gr2 <- bed_list_standard[[j]]
+      # Jaccard
+      query <- gr1
+      reference <- gr2
+      mtx_to_plot[i, j] <- mtx_to_plot[j, i] <- jaccard(query, reference)[["jaccard"]]
+      # GenometriCorr
+      # if (length(gr1) >= length(gr2)) {
+      #   reference <- gr1
+      #   query <- gr2
+      # } else {
+      #   reference <- gr2
+      #   query <- gr1
+      # }
+      # mtx_to_plot[i, j] <- mtx_to_plot[j, i] <- GCorr(query, reference)
+    }
+  }
+}
+
+# Trim row/colnames
+rownames(mtx_to_plot) <- colnames(mtx_to_plot) <- str_trunc(names(bed_list_standard), width = 25) 
+# Adjust clustering method
+# if(genome_assembly == "hg38") {
+#   clust_method <- "euclidean"
+# }
+# if(genome_assembly == "mm10") {
+#   clust_method <- "correlation"
+# }
+clust_method <- "euclidean"
+# Save the plot
+# png("man/figures/excluderanges_hg38_jaccard.png", width = 1000, height = 900, res = 200)
+p <- pheatmap(data.matrix(mtx_to_plot), cluster_cols = T, cluster_rows = T,
+         clustering_method = "ward.D2",# "ward.D", 
+         clustering_distance_rows = clust_method, 
+         clustering_distance_cols = clust_method, 
+         # annotation_row = mydf, annotation_colors = list(Group = c(PR = mycols[1], CR = mycols[2])),
+         treeheight_row = 40,
+         treeheight_col = 0, 
+         display_numbers = TRUE)
+save_pheatmap_svg(p, filename = fileNameOut3, width = 5.5, height = 4.5, units = "in", res = 300)
+# dev.off()
 ```
 
+
+```{r eval=FALSE}
+# MDS
+mds <- cmdscale(d = (1 - data.matrix(mtx_to_plot))) %>% as_tibble()
+colnames(mds) <- c("Dim.1", "Dim.2")
+mds <- mds %>% mutate(Groups = sample_annotation$Tumor, Samples = sample_annotation$Sample.Name)
+mds$Groups <- factor(mds$Groups, levels = c("PR", "CR"))
+ggplot(mds, aes(x = Dim.1, y = Dim.2)) + # , color = Groups, label = Samples
+  geom_point(size = 2) +
+  # scale_color_lancet() +
+  scale_color_manual(values = mycols[1:2]) +
+  # scale_color_brewer(palette = "Spectral") +
+  theme_bw() +
+  xlab("Coordinate 1") + ylab("Coordinate 2") 
+#  geom_label_repel(show.legend = FALSE) #, force=1, box.padding=0.5, label.padding = 0.2, direction = c("y"), segment.color = 'grey50', max.overlaps = 15)
+ggsave(file.path(dir_project, "manuscript/figures/figure_replicates/FigureS1A.svg"), width = 4, height = 3)
+```
 
