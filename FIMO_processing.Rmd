@@ -53,7 +53,7 @@ chromosome_mouse <- c("chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7", "c
 # Input files
 fileNameIn1 <- file.path(dir_data, "")
 # Output files
-fileNameOut1 <- file.path(dir_data, "")
+fileNameOut1 <- file.path(dir_data, "log_PWMs.csv")
 ```
 
 # Process data
@@ -124,18 +124,6 @@ combine_fimo <- function(motif = "SwissRegulon_human_and_mouse", genome_id = "T2
   save(list = ctcfGR_to_save, file = fileNameOut1)
   # load(file = fileNameOut1)
   export.bed(eval(parse(text = ctcfGR_to_save)), fileNameOut1.1)
-  # Summary
-  # Width
-  summary_gr <- summary(width(eval(parse(text = ctcfGR_to_save))))
-  # All summary
-  summary_to_save <- data.frame(File = ctcfGR_to_save,
-                                N = length(width(eval(parse(text = ctcfGR_to_save)))), 
-                                Min = as.numeric(summary_gr["Min."]), 
-                                Median = as.numeric(summary_gr["Median"]), 
-                                Mean = as.numeric(summary_gr["Mean"]), 
-                                Max = as.numeric(summary_gr["Max."]))
-  fileNameLog <- file.path(dir_data, "log_PWMs.csv")
-  write_csv(summary_to_save, fileNameLog, append = TRUE)
 }
 ```
 
@@ -171,5 +159,22 @@ for (gen in genome_mouse) {
     combine_fimo(motif = mot, genome_id = gen, chromosomes = chromosome_mouse)
   }
 }
+```
+
+# Summary
+
+```{r}
+files <- list.files(dir_data, pattern = "*.bed", full.names = TRUE)
+for (file in files) {
+  print(basename(file) %>% str_remove(., ".bed"))
+  gr <- import.bed(file)
+  # Summary
+  summary_to_save <- data.frame(File = basename(file) %>% str_remove(., ".bed"),
+                                Assembly = strsplit(basename(file), ".", fixed = TRUE)[[1]][1],
+                                All = length(gr),
+                                Reduced = length(reduce(gr)))
+  write_csv(summary_to_save, fileNameOut1, append = TRUE)
+}
+
 ```
 
