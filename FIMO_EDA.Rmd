@@ -1,0 +1,144 @@
+---
+title: "Analysis"
+author: "Mikhail Dozmorov"
+date: "`r Sys.Date()`"
+output:
+  pdf_document:
+    toc: no
+  html_document:
+    theme: cerulean
+    toc: yes
+---
+
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
+# Set up the environment
+library(knitr)
+opts_chunk$set(cache.path='cache/', fig.path='img/', cache=F, tidy=T, fig.keep='high', echo=F, dpi=100, warnings=F, message=F, comment=NA, warning=F, results='as.is', fig.width = 10, fig.height = 6) #out.width=700, 
+library(pander)
+panderOptions('table.split.table', Inf)
+set.seed(1)
+```
+
+# Libraries
+
+```{r libraries}
+library(tidyverse)
+library(readxl)
+library(writexl)
+library(cowplot)
+library(stringr)
+library("ggsci")
+library(scales)
+# scales::show_col(pal_lancet("lanonc")(8))
+mycols = pal_lancet("lanonc")(8)
+# Color palette for the heatmap, https://www.nceas.ucsb.edu/~frazier/RSpatialGuides/colorPaletteCheatsheet.pdf
+col3 <- colorRampPalette(c('blue', 'white', 'red'))(20)
+# col3 <- colorRampPalette(c('blue', 'gray', 'yellow'))(20)
+# col3 <- colorRampPalette(c('green', 'black', 'red'))(20)
+# col3 <- colorRamps::green2red(n = 20)
+
+```
+
+# Settings
+
+```{r settings}
+dir_data <- "/Users/mdozmorov/Documents/Data/GoogleDrive/CTCF.dev/merlot"
+# Motifs
+motif_human  <- c("CIS_BP_2.00_Homo_sapiens", "CTCFBSDB_PWM", "HOCOMOCOv11_core_HUMAN_mono_meme_format", "JASPAR2022_CORE_vertebrates_non_redundant_v2", "jolma2013", "SwissRegulon_human_and_mouse")
+motif_mouse  <- c("CIS_BP_2.00_Mus_musculus", "CTCFBSDB_PWM", "HOCOMOCOv11_core_MOUSE_mono_meme_format", "JASPAR2022_CORE_vertebrates_non_redundant_v2", "jolma2013", "SwissRegulon_human_and_mouse")
+# Genomes
+genome_human <- c("T2T", "hg38", "hg19")
+genome_mouse <- c("mm10", "mm9")
+```
+
+```{r hg18, eval=FALSE}
+# Human data hg18
+pvals <- rbind()
+pval_threshold <- 1e-6
+for (gen in c("hg18", genome_human)) {
+  for (mot in "JASPAR2022_MA0139.1") {
+    print(paste(gen, mot, sep = "."))
+    mtx <- read_tsv(fileNameIn, col_names = FALSE, col_types = c("ciicdciddc"))
+    fileNameIn <- file.path(dir_data, paste(gen, mot, "bed", sep = "."))
+    print(paste("Number of regions more significant than the p-value threshold:", round(sum(mtx$X8 < pval_threshold), digits = 5) ))
+    print(paste("Proportion of regions more significant than the p-value threshold:", round(sum(mtx$X8 < pval_threshold) / nrow(mtx), digits = 5) ))
+    pvals <- rbind(pvals, cbind(-log10(mtx$X8), rep(gen, nrow(mtx))))
+    # pvals$pvals <- c(pvals$pvals, -log10(mtx$X8))
+    # pvals$assembly <- c(pvals$assembly, rep(gen, nrow(mtx)))
+  }
+}
+pvals <- as.data.frame(pvals)
+pvals[, 1] <- as.numeric(pvals[, 1])
+colnames(pvals) <- c("-log10(p-value)", "Assembly")
+
+ggplot(pvals, aes(x = `-log10(p-value)`, color = Assembly)) +
+  geom_density()
+```
+
+# Human data all
+
+```{r hgall}
+pvals <- rbind()
+pval_threshold <- 1e-6
+for (gen in "hg38") {
+  for (mot in motif_human) {
+    print(paste(gen, mot, sep = "."))
+    fileNameIn <- file.path(dir_data, paste(gen, mot, "bed", sep = "."))
+    mtx <- read_tsv(fileNameIn, col_names = FALSE, col_types = c("ciicdciddc"))
+    print(paste("Number of regions more significant than the p-value threshold:", round(sum(mtx$X8 < pval_threshold), digits = 5) ))
+    print(paste("Proportion of regions more significant than the p-value threshold:", round(sum(mtx$X8 < pval_threshold) / nrow(mtx), digits = 5) ))
+    pvals <- rbind(pvals, cbind(-log10(mtx$X8), rep(mot, nrow(mtx))))
+  }
+}
+pvals <- as.data.frame(pvals)
+pvals[, 1] <- as.numeric(pvals[, 1])
+colnames(pvals) <- c("-log10(p-value)", "MotifDB")
+
+ggplot(pvals, aes(x = `-log10(p-value)`, color = MotifDB)) +
+  geom_density() +
+  geom_vline(xintercept = -log10(pval_threshold), linetype = "dashed", color = "red") +
+  scale_color_manual(values = mycols[1:6]) +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), 
+      panel.grid.minor = element_blank(), 
+      # axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
+      plot.title = element_text(hjust = 0.5)) +
+  ylab("Density")
+
+fileNameOut1 <- file.path(dir_data, "Figure_human_pvalues.svg")
+ggsave(filename = fileNameOut1, width = 7, height = 3)
+```
+
+# Mouse data all
+
+```{r mmall}
+pvals <- rbind()
+pval_threshold <- 1e-6
+for (gen in "mm10") {
+  for (mot in motif_mouse) {
+    print(paste(gen, mot, sep = "."))
+    fileNameIn <- file.path(dir_data, paste(gen, mot, "bed", sep = "."))
+    mtx <- read_tsv(fileNameIn, col_names = FALSE, col_types = c("ciicdciddc"))
+    print(paste("Number of regions more significant than the p-value threshold:", round(sum(mtx$X8 < pval_threshold), digits = 5) ))
+    print(paste("Proportion of regions more significant than the p-value threshold:", round(sum(mtx$X8 < pval_threshold) / nrow(mtx), digits = 5) ))
+    pvals <- rbind(pvals, cbind(-log10(mtx$X8), rep(mot, nrow(mtx))))
+  }
+}
+pvals <- as.data.frame(pvals)
+pvals[, 1] <- as.numeric(pvals[, 1])
+colnames(pvals) <- c("-log10(p-value)", "MotifDB")
+
+ggplot(pvals, aes(x = `-log10(p-value)`, color = MotifDB)) +
+  geom_density() +
+  geom_vline(xintercept = -log10(pval_threshold), linetype = "dashed", color = "red") +
+  scale_color_manual(values = mycols[1:6]) +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), 
+      panel.grid.minor = element_blank(), 
+      # axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
+      plot.title = element_text(hjust = 0.5)) +
+  ylab("Density")
+
+fileNameOut1 <- file.path(dir_data, "Figure_mouse_pvalues.svg")
+ggsave(filename = fileNameOut1, width = 7, height = 3)
+```

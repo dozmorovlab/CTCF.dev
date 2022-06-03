@@ -1,0 +1,74 @@
+---
+title: "Analysis"
+author: "Mikhail Dozmorov"
+date: "`r Sys.Date()`"
+output:
+  pdf_document:
+    toc: no
+  html_document:
+    theme: cerulean
+    toc: yes
+---
+
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
+# Set up the environment
+library(knitr)
+opts_chunk$set(cache.path='cache/', fig.path='img/', cache=F, tidy=T, fig.keep='high', echo=F, dpi=100, warnings=F, message=F, comment=NA, warning=F, results='as.is', fig.width = 10, fig.height = 6) #out.width=700, 
+library(pander)
+panderOptions('table.split.table', Inf)
+set.seed(1)
+```
+
+# Libraries
+
+```{r libraries}
+library(tidyverse)
+library(readxl)
+library(writexl)
+library(cowplot)
+library(stringr)
+library("ggsci")
+library(scales)
+# scales::show_col(pal_lancet("lanonc")(8))
+mycols = pal_lancet("lanonc")(8)
+# Color palette for the heatmap, https://www.nceas.ucsb.edu/~frazier/RSpatialGuides/colorPaletteCheatsheet.pdf
+col3 <- colorRampPalette(c('blue', 'white', 'red'))(20)
+# col3 <- colorRampPalette(c('blue', 'gray', 'yellow'))(20)
+# col3 <- colorRampPalette(c('green', 'black', 'red'))(20)
+# col3 <- colorRamps::green2red(n = 20)
+
+```
+
+# Settings
+
+```{r settings}
+# Project folder path
+dir_data <- "/Users/mdozmorov/Documents/Data/GoogleDrive/Avocado_preciseTAD/Maggie/GM12878/PTBR_Peakachu_outputs/"
+
+# Input files
+fileNameIn1 <- file.path(dir_data, "")
+# Output files
+fileNameOut1 <- file.path(dir_data, "")
+```
+
+# Convert BED to BEDPE
+
+```{r data}
+# Read in data
+files <- list.files(dir_data, pattern = "*.bed$")
+for (fil in files) {
+  print(fil)
+  # BED data
+  mtx <- read_tsv(file.path(dir_data, fil), col_names = FALSE)
+  # Convert to pairs
+  bedpe <- rbind()
+  for (i in 1:(nrow(mtx) - 1)) {
+    bedpe <-rbind(bedpe, c(mtx[i, 1:3], mtx[i + 1, 1:3]))
+  }
+  # BEDPE file name
+  newfile <- file.path(dir_data, paste0(fil, "pe"))
+  write.table(bedpe, newfile, quote = FALSE, sep = "\t", col.names = FALSE, row.names = FALSE)
+  # write_tsv(as.data.frame(bedpe), newfile, col_names = FALSE)
+}
+```
+

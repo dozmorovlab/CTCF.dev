@@ -26,6 +26,14 @@ File name conventions: `<assembly>.<Database>.<original file name or label>`
     - Input: `fimo.txt.gz` files from motif-, genome-, and chromosome-specific subfolders
     - Output: `<assembly>.<Database>.FIMO` granges objects and BED file
 
+- `BED_to_BEDPE.Rmd` - Convert BED to paired BEDPE format
+    - Input: PreciseTAD-predicted regions, `/Users/mdozmorov/Documents/Data/GoogleDrive/Avocado_preciseTAD/Maggie/GM12878/PTBR_Peakachu_outputs/`
+    - Output: BEDPE files in the same folder
+    
+- `FIMO_EDA.Rmd` - exploratory analysis of p-value distributions for human and mouse genomes
+    - Input: hg38 and mm10 FIMO-detected sites
+    - Output: density plots of p-value distributions, `Figure_human_pvalues.svg`, `Figure_mouse_pvalues.svg`
+
 - `EDA_Chang_Noordermeer_2021.Rmd` - Processing `Chang_Noordermeer_2021.xlsx`
 - `EDA_PWMScan.Rmd` - PWMScan analysis
 - `EDA_AnnotationHub.Rmd` - explore CTCF data on AnnotationHub and ExperimentHub

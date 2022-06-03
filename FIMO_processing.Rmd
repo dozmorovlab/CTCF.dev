@@ -41,8 +41,8 @@ library(rtracklayer)
 # Project folder path
 dir_data <- "/Users/mdozmorov/Documents/Data/GoogleDrive/CTCF.dev/merlot"
 # Motifs
-motif_human  <- c("CIS_BP_2.00_Homo_sapiens", "CTCFBSDB_PWM_corrected", "HOCOMOCOv11_core_HUMAN_mono_meme_format", "JASPAR2022_CORE_vertebrates_non_redundant_v2", "jolma2013_corrected", "SwissRegulon_human_and_mouse")
-motif_mouse  <- c("CIS_BP_2.00_Mus_musculus", "CTCFBSDB_PWM_corrected", "HOCOMOCOv11_core_MOUSE_mono_meme_format", "JASPAR2022_CORE_vertebrates_non_redundant_v2", "jolma2013_corrected", "SwissRegulon_human_and_mouse")
+motif_human  <- c("CIS_BP_2.00_Homo_sapiens", "CTCFBSDB_PWM", "HOCOMOCOv11_core_HUMAN_mono_meme_format", "JASPAR2022_CORE_vertebrates_non_redundant_v2", "jolma2013", "SwissRegulon_human_and_mouse")
+motif_mouse  <- c("CIS_BP_2.00_Mus_musculus", "CTCFBSDB_PWM", "HOCOMOCOv11_core_MOUSE_mono_meme_format", "JASPAR2022_CORE_vertebrates_non_redundant_v2", "jolma2013", "SwissRegulon_human_and_mouse")
 # Genomes
 genome_human <- c("T2T", "hg38", "hg19")
 genome_mouse <- c("mm10", "mm9")
@@ -71,6 +71,7 @@ combine_fimo <- function(motif = "SwissRegulon_human_and_mouse", genome_id = "T2
                       IRanges(start = ctcfBED$start, end = ctcfBED$stop),
                       strand = ctcfBED$strand)
     # Add metadata
+    ctcf_chr_gr$name = ctcfBED$`#pattern name`
     ctcf_chr_gr$score = ctcfBED$score
     ctcf_chr_gr$pvalue = ctcfBED$`p-value`
     ctcf_chr_gr$qvalue = ctcfBED$`q-value`
@@ -123,7 +124,10 @@ combine_fimo <- function(motif = "SwissRegulon_human_and_mouse", genome_id = "T2
   # Save as RData object. ctcfGR_to_save is the character name of the CTCF GRanges variable
   save(list = ctcfGR_to_save, file = fileNameOut1)
   # load(file = fileNameOut1)
-  export.bed(eval(parse(text = ctcfGR_to_save)), fileNameOut1.1)
+  # export.bed(eval(parse(text = ctcfGR_to_save)), fileNameOut1.1)
+  ctcfDF_to_save <- as.data.frame(eval(parse(text = ctcfGR_to_save)))
+  ctcfDF_to_save <- ctcfDF_to_save[, c("seqnames", "start", "end", "name", "score", "strand", "width", "pvalue", "qvalue", "sequence")]
+  write_tsv(ctcfDF_to_save, fileNameOut1.1, col_names = FALSE)
 }
 ```
 
@@ -131,7 +135,7 @@ combine_fimo <- function(motif = "SwissRegulon_human_and_mouse", genome_id = "T2
 
 ```{r hg18}
 for (gen in c("hg18", genome_human)) {
-  for (mot in "MA0139.1") {
+  for (mot in "JASPAR2022_MA0139.1") {
     print(paste(gen, mot, sep = "."))
     combine_fimo(motif = mot, genome_id = gen, chromosomes = chromosome_human)
   }
@@ -164,10 +168,19 @@ for (gen in genome_mouse) {
 # Summary
 
 ```{r}
+# for file in `find . -type f -name "*MA0139*"`; do
+#   echo $file
+#   newfile=`echo $file | sed 's/MA0139/JASPAR2022_MA0139/'`
+#   echo $newfile
+#   mv $file $newfile
+# done
+# 
 files <- list.files(dir_data, pattern = "*.bed", full.names = TRUE)
 for (file in files) {
   print(basename(file) %>% str_remove(., ".bed"))
-  gr <- import.bed(file)
+  mtx <- read_tsv(file, col_names = FALSE)
+  colnames(mtx) <- c("seqnames", "start", "end", "name", "score", "strand", "width", "pvalue", "qvalue", "sequence")
+  gr <- makeGRangesFromDataFrame(mtx)
   # Summary
   summary_to_save <- data.frame(File = basename(file) %>% str_remove(., ".bed"),
                                 Assembly = strsplit(basename(file), ".", fixed = TRUE)[[1]][1],
@@ -175,6 +188,5 @@ for (file in files) {
                                 Reduced = length(reduce(gr)))
   write_csv(summary_to_save, fileNameOut1, append = TRUE)
 }
-
 ```
 
