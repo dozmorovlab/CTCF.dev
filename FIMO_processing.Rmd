@@ -52,8 +52,6 @@ chromosome_mouse <- c("chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7", "c
 
 # Input files
 fileNameIn1 <- file.path(dir_data, "")
-# Output files
-fileNameOut1 <- file.path(dir_data, "log_PWMs.csv")
 ```
 
 # Process data
@@ -116,7 +114,7 @@ combine_fimo <- function(motif = "SwissRegulon_human_and_mouse", genome_id = "T2
     genome(ctcfGR)     <- genome_id
   }
 
-  ctcfGR_to_save <- paste(genome_id, motif, "FIMO", sep = ".")
+  ctcfGR_to_save <- paste(genome_id, motif, sep = ".")
   fileNameOut1 <- file.path(dir_data, paste0(ctcfGR_to_save, ".RData"))
   fileNameOut1.1 <- file.path(dir_data, paste0(ctcfGR_to_save, ".bed"))
   # Assign this object to the subfolder-specific variable name
@@ -175,18 +173,26 @@ for (gen in genome_mouse) {
 #   mv $file $newfile
 # done
 # 
+# Output files
+fileNameOut1 <- file.path(dir_data, "log_PWMs.csv")
+if (file.exists(fileNameOut1)) { file.remove(fileNameOut1) }
+# Defined from FIMO_EDA
+pval_threshold <- 1e-6
 files <- list.files(dir_data, pattern = "*.bed", full.names = TRUE)
-for (file in files) {
-  print(basename(file) %>% str_remove(., ".bed"))
-  mtx <- read_tsv(file, col_names = FALSE)
+for (fil in files) {
+  print(basename(fil) %>% str_remove(., ".bed"))
+  mtx <- read_tsv(fil, col_names = FALSE, col_types = c("ciicdciddc"))
   colnames(mtx) <- c("seqnames", "start", "end", "name", "score", "strand", "width", "pvalue", "qvalue", "sequence")
-  gr <- makeGRangesFromDataFrame(mtx)
+  gr <- makeGRangesFromDataFrame(mtx, keep.extra.columns = TRUE)
   # Summary
-  summary_to_save <- data.frame(File = basename(file) %>% str_remove(., ".bed"),
-                                Assembly = strsplit(basename(file), ".", fixed = TRUE)[[1]][1],
-                                All = length(gr),
-                                Reduced = length(reduce(gr)))
+  summary_to_save <- data.frame(File = basename(fil) %>% str_remove(., ".bed"),
+                                Assembly = strsplit(basename(fil), ".", fixed = TRUE)[[1]][1],
+                                `All (p-value threshold 1e-4)` = length(gr),
+                                `Reduced (p-value threshold 1e-4)` = length(reduce(gr)),
+                                `All (p-value threshold 1e-6)` = length(gr[gr$pvalue < pval_threshold]),
+                                `Reduced (p-value threshold 1e-6)` = length(reduce(gr[gr$pvalue < pval_threshold])) )
   write_csv(summary_to_save, fileNameOut1, append = TRUE)
+  gc()
 }
 ```
 
