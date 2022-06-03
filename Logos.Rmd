@@ -297,6 +297,114 @@ motifStack(motifs, layout="tree")
 dev.off()
 ```
 
+# ENCODE
+
+```{r eval=FALSE}
+# Modify input dir
+dir_data1 <- file.path(dir_data, "ENCODE_motifs_CTCF")
+files <- list.files(dir_data1, pattern = "*.txt", full.names = TRUE)
+# Output file
+fileNameOut1 <- file.path(dir_data1, "motifs_CTCF.meme")
+fileNameOut2 <- file.path(dir_data1, "motifs_CTCF.svg")
+# Standard header
+write_lines("MEME version 5.4.1 (Tue Mar 1 19:18:48 2022 -0800)", file = fileNameOut1)
+write_lines("ALPHABET= ACGT", file = fileNameOut1, append = TRUE)
+write_lines("strands: + -", file = fileNameOut1, append = TRUE)
+write_lines("Background letter frequencies (from uniform background):", file = fileNameOut1, append = TRUE)
+write_lines("A 0.25000 C 0.25000 G 0.25000 T 0.25000 ", file = fileNameOut1, append = TRUE)
+# Store number of bases
+nsites <- c()
+for(i in 1:length(files)) {
+  fileNameIn=files[i]
+  mtx <- read.table(fileNameIn, sep = " ", fill = TRUE)
+  # Make motif name
+  motif_name <- strsplit(mtx[1, 1], "\t")[[1]]
+  motif_id <- motif_name[1] %>% str_remove(">")
+  motif_alt <- motif_name[length(motif_name)]
+  # Drop header row
+  mtx <- mtx[2:nrow(mtx), ]
+  # If non-empty, proceed
+  if (nrow(mtx) > 0) {
+    # Collect number of bases
+    nsites <- c(nsites, nrow(mtx))
+    # Motif name
+    write_lines(paste0("MOTIF ", paste(motif_id, motif_alt)), file = fileNameOut1, append = TRUE)
+    # Header line
+    header_line <- paste0("letter-probability matrix: alength= 4 w= ", nrow(mtx), " nsites= 20 E= 0")
+    write_lines(header_line, file = fileNameOut1, append = TRUE)
+    # Make first numerical column empty
+    mtx[, 1] <- ""
+    # Write actual data
+    write_tsv(mtx, file = fileNameOut1, col_names = FALSE, append = TRUE)
+    # Separate from the next motif
+    write_lines("", file = fileNameOut1, append = TRUE)
+  }
+}
+print("Number of motifs")
+print(length(nsites))
+print("Summary of motif widths")
+summary(nsites)
+# Test if can be imported
+motifs_all <- importMatrix(fileNameOut1)
+if (!file.exists(fileNameOut2)) {
+  dev.off()
+  svg(fileNameOut2, width = 10, height = 14)
+  motifStack(motifs_all, layout="tree") 
+  dev.off()
+  }
+```
+
+```{r}
+# Modify input file
+fileNameIn1 <- file.path(dir_data, "motifs_CTCF.txt")
+# Output file
+fileNameOut1 <- file.path(dir_data1, "motifs_CTCF.meme")
+fileNameOut2 <- file.path(dir_data1, "motifs_CTCF.svg")
+# Standard header
+write_lines("MEME version 5.4.1 (Tue Mar 1 19:18:48 2022 -0800)", file = fileNameOut1)
+write_lines("ALPHABET= ACGT", file = fileNameOut1, append = TRUE)
+write_lines("strands: + -", file = fileNameOut1, append = TRUE)
+write_lines("Background letter frequencies (from uniform background):", file = fileNameOut1, append = TRUE)
+write_lines("A 0.25000 C 0.25000 G 0.25000 T 0.25000 ", file = fileNameOut1, append = TRUE)
+# Store number of bases
+nsites <- c()
+for(i in 1:length(files)) {
+  file=files[i]
+  mtx <- read.table(fileNameIn1, sep = " ", fill = TRUE)
+  # Make motif name
+  motif_name <- strsplit(mtx[1, 1], "\t")[[1]]
+  motif_id <- motif_name[1] %>% str_remove(">")
+  motif_alt <- motif_name[length(motif_name)]
+  # If non-empty, proceed
+  if (nrow(mtx) > 0) {
+    # Collect number of bases
+    nsites <- c(nsites, nrow(mtx))
+    # Motif name
+    write_lines(paste0("MOTIF ", motif_name), file = fileNameOut1, append = TRUE)
+    # Header line
+    header_line <- paste0("letter-probability matrix: alength= 4 w= ", nrow(mtx), " nsites= 20 E= 0")
+    write_lines(header_line, file = fileNameOut1, append = TRUE)
+    # Make first numerical column empty
+    mtx$Pos <- ""
+    # Write actual data
+    write_tsv(mtx, file = fileNameOut1, col_names = FALSE, append = TRUE)
+    # Separate from the next motif
+    write_lines("", file = fileNameOut1, append = TRUE)
+  }
+}
+print("Number of motifs")
+print(length(nsites))
+print("Summary of motif widths")
+summary(nsites)
+# Test if can be imported
+motifs_all <- importMatrix(fileNameOut1)
+if (!file.exists(fileNameOut2)) {
+  dev.off()
+  svg(fileNameOut2, width = 8, height = 2.5)
+  motifStack(motifs_all, layout="tree") 
+  dev.off()
+}
+```
 
 
 
