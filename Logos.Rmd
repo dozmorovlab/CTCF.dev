@@ -187,7 +187,7 @@ nsites <- c()
 for(i in 1:length(files)) {
   file=files[i]
   # Make motif name
-  motif_name <- basename(file) %>% str_remove(., ".txt")
+  motif_name <- basename(file) %>% str_remove(., ".txt") %>% str_replace(., ".", "_")
   mtx <- read_tsv(file, col_types = c("ccccc"))
   # If non-empty, proceed
   if (nrow(mtx) > 0) {
@@ -214,8 +214,22 @@ summary(nsites)
 motifs_all <- importMatrix(fileNameOut1)
 if (!file.exists(fileNameOut2)) {
   dev.off()
-  svg(fileNameOut2, width = 8, height = 78)
-  motifStack(motifs_all, layout="tree") 
+  svg(fileNameOut2, width = 8, height = 4)
+  # motifStack(motifs_all, layout="tree") 
+  ## use matalign to calculate the distances of motifs
+  hc <- clusterMotifs(motifs_all)
+  ## convert the hclust to phylog object
+  library(ade4)
+  phylog1 <- ade4::hclust2phylog(hc)
+  ## reorder the motifs_all by the order of hclust
+  leaves <- names(phylog1$leaves)
+  motifs_all <- motifs_all[leaves]
+  ## extract the motif signatures
+  motifSig <- motifSignature(motifs_all, phylog1, cutoffPval=0.0001, min.freq=1)
+  ## draw the motifs with a tag-cloud style.
+  motifCloud(motifSig, scale=c(1, 0.55), rot.per = 0,
+             layout="rectangles", 
+             freq.col = "black")
   dev.off()
 }
 ```
@@ -354,7 +368,7 @@ if (!file.exists(fileNameOut2)) {
   }
 ```
 
-```{r}
+```{r eval=FALSE}
 # Modify input file
 fileNameIn1 <- file.path(dir_data, "motifs_CTCF.txt")
 # Output file
@@ -405,24 +419,4 @@ if (!file.exists(fileNameOut2)) {
   dev.off()
 }
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
