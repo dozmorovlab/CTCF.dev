@@ -129,7 +129,7 @@ combine_fimo <- function(motif = "SwissRegulon_human_and_mouse", genome_id = "T2
 }
 ```
 
-# Human data hg18
+# Human data liftOver
 
 ```{r hg18}
 for (gen in c("hg18", genome_human)) {
@@ -148,6 +148,17 @@ for (gen in genome_human) {
   for (mot in motif_human) {
     print(paste(gen, mot, sep = "."))
     combine_fimo(motif = mot, genome_id = gen, chromosomes = chromosome_human)
+  }
+}
+```
+
+# Mouse data liftOver
+
+```{r hg18}
+for (gen in c(genome_mouse)) {
+  for (mot in "MA0139.1") {
+    print(paste(gen, paste0("JASPAR2022_", mot), sep = "."))
+    combine_fimo(motif = mot, genome_id = gen, chromosomes = chromosome_mouse)
   }
 }
 ```
