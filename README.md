@@ -13,6 +13,7 @@ File name conventions: `<assembly>.<Database>.<original file name or label>`
 - `EDA_liftOver.Rmd` - overlap between originally aligned and lifted-over genomes
     - Input: BED files from `/Users/mdozmorov/Documents/Data/GoogleDrive/CTCF.dev/CTCF_liftover`. liftOver chains obtained using `download.sh`. Processed with `convert.sh`.
     - Output: `Figure_liftOverJaccard.svg`
+- `EDA_liftOver_mm.Rmd` - same for mm9-mm10
 
 - `EDA_SCREEN.Rmd` - Processing https://screen.encodeproject.org/. Basic stats, conversion to GRanges
     - Input: `GRCh38-CTCF.bed` and `mm10-CTCF.bed`
@@ -79,7 +80,17 @@ T2T = GCA_009914755.4
 
 
 
+Dear all,
 
+You may remember the CTCF R package we discussed a few months ago. I followed up with a more rigorous investigation of CTCF data, attaching the manuscript draft. I would appreciate if you agree to be co-authors and provide your ideas or help with additional analyses. Potential ideas include:
+- Using the nullranges framework to evaluate CTCF sites detected using different PWMs;
+- Using this data for experimental Hi-C/TAD demo analysis.
+
+Please, let me know your thoughts and provide your comments by next Monday, June 13, or earlier. I'd appreciate if we could discuss next Friday, June 17, 3:00pm ET. Zoom calendar invite will follow. If it doesn't work for the majority, we'll reschedule.
+
+Looking forward to hearing from you.
+Thanks,
+Mikhail
 
 
 
