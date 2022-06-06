@@ -189,7 +189,8 @@ fileNameOut1 <- file.path(dir_data, "log_PWMs.csv")
 if (file.exists(fileNameOut1)) { file.remove(fileNameOut1) }
 # Defined from FIMO_EDA
 pval_threshold <- 1e-6
-files <- list.files(dir_data, pattern = "*.bed", full.names = TRUE)
+files <- list.files(dir_data, pattern = "*MA0139.1.bed", full.names = TRUE)
+files <- files[grepl("mm", files)]
 for (fil in files) {
   print(basename(fil) %>% str_remove(., ".bed"))
   mtx <- read_tsv(fil, col_names = FALSE, col_types = c("ciicdciddc"))
