@@ -108,8 +108,8 @@ length(mm8.CTCFBSDB.CTCF_predicted_mouse)
 summary(width(mm8.CTCFBSDB.CTCF_predicted_mouse))
 
 # Save as RData object. subdir is the character name of the CTCF GRanges variable
-save(list = hg18.CTCFBSDB.CTCF_predicted_human, file = fileNameOut1)
-save(list = mm8.CTCFBSDB.CTCF_predicted_mouse, file = fileNameOut2)
+save(list = "hg18.CTCFBSDB.CTCF_predicted_human", file = fileNameOut1)
+save(list = "mm8.CTCFBSDB.CTCF_predicted_mouse", file = fileNameOut2)
 # load(file = paste0(subdir, ".RData"))
 # Save BED files
 export.bed(hg18.CTCFBSDB.CTCF_predicted_human, fileNameOut1.1)
