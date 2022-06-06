@@ -102,11 +102,18 @@ ggplot(pvals, aes(x = `-log10(p-value)`, color = MotifDB)) +
   theme(panel.grid.major = element_blank(), 
       panel.grid.minor = element_blank(), 
       # axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
-      plot.title = element_text(hjust = 0.5)) +
+      plot.title = element_text(hjust = 0.5),
+      legend.text = element_text(size = 6)) +
+      # legend.key.height = unit(0.2, "mm"),
+      # legend.key.width = unit(5, "mm")) +
   ylab("Density")
 
 fileNameOut1 <- file.path(dir_data, "Figure_human_pvalues.svg")
-ggsave(filename = fileNameOut1, width = 7, height = 3)
+
+dev.off()
+svg(filename = fileNameOut1, width = 7, height = 3)
+print(p)
+dev.off()
 ```
 
 # Mouse data all
@@ -128,7 +135,7 @@ pvals <- as.data.frame(pvals)
 pvals[, 1] <- as.numeric(pvals[, 1])
 colnames(pvals) <- c("-log10(p-value)", "MotifDB")
 
-ggplot(pvals, aes(x = `-log10(p-value)`, color = MotifDB)) +
+p <- ggplot(pvals, aes(x = `-log10(p-value)`, color = MotifDB)) +
   geom_density() +
   geom_vline(xintercept = -log10(pval_threshold), linetype = "dashed", color = "red") +
   scale_color_manual(values = mycols[1:6]) +
@@ -136,9 +143,16 @@ ggplot(pvals, aes(x = `-log10(p-value)`, color = MotifDB)) +
   theme(panel.grid.major = element_blank(), 
       panel.grid.minor = element_blank(), 
       # axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
-      plot.title = element_text(hjust = 0.5)) +
+      plot.title = element_text(hjust = 0.5),
+      legend.text = element_text(size = 6)) +
+      # legend.key.height = unit(0.2, "mm"),
+      # legend.key.width = unit(5, "mm")) +
   ylab("Density")
 
 fileNameOut1 <- file.path(dir_data, "Figure_mouse_pvalues.svg")
-ggsave(filename = fileNameOut1, width = 7, height = 3)
+# ggsave(filename = fileNameOut1, width = 7, height = 3)
+dev.off()
+svg(filename = fileNameOut1, width = 7, height = 3)
+print(p)
+dev.off()
 ```
