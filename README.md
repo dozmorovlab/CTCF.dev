@@ -35,6 +35,11 @@ File name conventions: `<assembly>.<Database>.<original file name or label>`
     - Input: hg38 and mm10 FIMO-detected sites
     - Output: density plots of p-value distributions, `Figure_human_pvalues.svg`, `Figure_mouse_pvalues.svg`
 
+- `CTCF_Threshold.Rmd` - Exploring MEME p-value threshold cutoff
+    - Input: `GRCh38-CTCF.bed` ENCODE SCREEN CTCF cCREs as gold standard, `hg38.JASPAR2022_MA0139.1.bed` MEME CTCF sites
+    - Output: `results/Figure_human_pvalues_threshold.svg`
+
+
 - `EDA_Chang_Noordermeer_2021.Rmd` - Processing `Chang_Noordermeer_2021.xlsx`
 - `EDA_PWMScan.Rmd` - PWMScan analysis
 - `EDA_AnnotationHub.Rmd` - explore CTCF data on AnnotationHub and ExperimentHub
