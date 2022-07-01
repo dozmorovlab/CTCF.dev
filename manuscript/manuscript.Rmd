@@ -27,13 +27,13 @@ dir_data <- "/Users/mdozmorov/Documents/Work/GitHub/CTCF.dev"
 
 # Authors (alphabetical order)
 
-Douglas Phanstiel  
+Mikhail Dozmorov *  
+Wancen Mu  
 Eric Davis  
-Michael Love  
-Mikhail Dozmorov  
 Stuart Lee  
 Tim Triche  
-Wancen Mu  
+Douglas Phanstiel  
+Michael Love  
 
 # Abstract
 
@@ -64,7 +64,7 @@ knitr::include_graphics(fileNameIn1)
 **Figure 1. CTCF motif logos of PWMs used to obtain CTCF binding sites.** PWMs from (A) MEME and (B) CTCFBSDB databases. Motifs were clustered using the `motifStack` R package.
 
 **Table 1. CTCF PWM information.** "Motif" - individual motif IDs or the total number of motifs per database; "Length" - motif length of the range of lengths; "URL" - direct links to motif pages; "Ref" - literature reference.
-```{r eval=FALSE}
+```{r eval=TRUE}
 fileNameIn1 <- file.path(dir_data, "Tables", "Table_1_PWMs.xlsx")
 mtx <- read_xlsx(fileNameIn1)
 mtx[is.na(mtx)] <- ""
