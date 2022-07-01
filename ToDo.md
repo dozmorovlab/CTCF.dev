@@ -1,5 +1,9 @@
 - http://cisbp.ccbr.utoronto.ca/TFreport.php?searchTF=T094831_2.00 - `CisBP_2022_02_24_4_13_pm` - Homo Sapiens CTCF PWM motif matrices
 
+- Disambiguate motifs and sites
+- Scan p-value thresholded CTCF motifs for overlap with SCREEN ENCODE CREs
+- See if SCREEN ENCODE CREs can be annotated with directionality
+
 ## Other transcription factors
 
 - CEBPB, CMYC, CTCF, JUND, MAFK, P300, POL2, POLR2A, RAD21, SMC3, TAF1, and TBP for hESCs, and CEBPB, CTCF, MAFK, POLR2A, and RAD21 - From Arboretum-Hi-C paper
