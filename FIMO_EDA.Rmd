@@ -96,7 +96,7 @@ colnames(pvals) <- c("-log10(p-value)", "MotifDB")
 
 ggplot(pvals, aes(x = `-log10(p-value)`, color = MotifDB)) +
   geom_density() +
-  geom_vline(xintercept = -log10(pval_threshold), linetype = "dashed", color = "red") +
+  geom_vline(xintercept = -log10(pval_threshold), linetype = "dashed", color = "black") +
   scale_color_manual(values = mycols[1:6]) +
   theme_bw() +
   theme(panel.grid.major = element_blank(), 
@@ -109,11 +109,13 @@ ggplot(pvals, aes(x = `-log10(p-value)`, color = MotifDB)) +
   ylab("Density")
 
 fileNameOut1 <- file.path(dir_data, "Figure_human_pvalues.svg")
+ggsave(filename = fileNameOut1, width = 6.4, height = 1.6)
 
-dev.off()
-svg(filename = fileNameOut1, width = 7, height = 3)
-print(p)
-dev.off()
+# dev.off()
+# svg(filename = fileNameOut1, width = 7, height = 2)
+# print(p)
+# dev.off()
+
 ```
 
 # Mouse data all
