@@ -1,0 +1,67 @@
+---
+# csl: /Volumes/GoogleDrive/My Drive/manuscript_template/styles.ref/cell-reports.csl
+csl: /Users/mdozmorov/Documents/Work/presentations/Templates/manuscript_template/styles.ref/cell-reports.csl
+output: 
+  word_document:
+#    reference_docx: /Volumes/GoogleDrive/My Drive/manuscript_template/styles.doc/NIH_grant_style.docx
+    reference_docx: /Users/mdozmorov/Documents/Work/presentations/Templates/manuscript_template/styles.doc/NIH_grant_style.docx
+# https://github.com/mdozmorov/manuscript_template/tree/master/references
+# bibliography: /Volumes/GoogleDrive/My Drive/manuscript_template/references/references_MD.bib
+bibliography: /Users/mdozmorov/Documents/Work/presentations/Templates/manuscript_template/references/references_MD.bib
+always_allow_html: true
+---
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# Set up the environment
+library(knitr)
+opts_chunk$set(cache.path='cache/', fig.path='img/', cache=F, tidy=T, fig.keep='high', echo=F, dpi=100, warnings=F, message=F, comment=NA, warning=F, results='as.is', fig.width = 10, fig.height = 6) #out.width=700, 
+library(pander)
+panderOptions('table.split.table', Inf)
+set.seed(1)
+# library(kableExtra)
+library(readxl)
+dir_data <- "/Users/mdozmorov/Documents/Work/GitHub/CTCF.dev"
+```
+
+# CTCF: A Bioconductor data package of human and mouse CTCF binding sites
+
+Mikhail Dozmorov*, Wancen Mu, Eric Davis, Stuart Lee, Tim Triche, Douglas Phanstiel, Michael Love  
+
+# Abstract
+
+**Summary:** CTCF (CCCTC-binding factor) is considered the master regulator of the genome's structure and function. The diversity of CTCF binding motifs leads to the lack of a unified source of CTCF binding data. We collected position weight matrices of CTCF binding motifs and defined strand-oriented CTCF binding sites in the human and mouse genome assemblies, including the Telomere to Telomere human and mm39 mouse genomes. We also included selected experimentally determined and predicted CTCF binding sites, such as CTCF-bound cis-regulatory element from SCREEN ENCODE. We recommend filtering less significant CTCF binding motifs and demonstrate that liftOver is a viable option to convert CTCF coordinates between genome assemblies. Our comprehensive data resource and usage recommendations will strengthen reproducibility of genomic studies utilizing CTCF binding data.
+
+**Availability:** https://bioconductor.org/packages/CTCF  
+**Contact:** mdozmorov@vcu.edu  
+**Supplementary information:** Supplementary data are available at Bioinformatics online.
+
+### Keywords
+
+# Introduction
+
+The structural and regulatory organization of the mammalian genome is fundamentally dependent on CTCF (CCCTC-binding factor), a versatile transcription regulator <!--evolutionary conserved from fruit fly to human [@Phillips:2009aa; @Ohlsson:2001wu; @Kim:2007ux]. Originally defined as a repressor/insulator protein [@Lobanenkov:1990vm; @Filippova:1996tv], it has been found to be involved in a variety of regulatory functions including -->involved in transcriptional activation, imprinting, X-chromosome activation, cancer and developmental disorders, <!--intra- and inter-chromosomal contacts -->chromatin interactions in three dimensions [@Phillips:2009aa; @Ohlsson:2010uy]. <!--CTCF is ubiquitously expressed, and its deletion in the germline cells is incompatible with cell viability [@Heath:2008vs]. Mutations in CTCF binding sites and CTCF itself are associated with human cancers [@Liu:2019vg; @Saldana-Meyer:2019aa], identifying CTCF as an important candidate tumor-suppressor gene [@Filippova:2002uz].-->
+<!-- Most CTCF binding sites are located far from the transcriptional start sites, with their distribution strongly correlated with genes [@Kim:2007ux]. binding motif length varying between 20 and 40bp -->
+CTCF binds DNA through combinatorial use of its 11-zinc finger domains to target sites that have remarkable sequence variation [@Ohlsson:2001wu; @Jolma:2013vd]<!--@Filippova:1996tv-->. A 15-20bp CTCF consensus motif from the ChIP-seq data analysis has been defined [@Kim:2007ux], referred to hereafter as M1. This motif interacts with the N-terminal zinc fingers for most CTCF–DNA-binding events. Subsequently, a shorter 9bp motif (M2) interacting with the C-terminal fingers was discovered that, together with M1, forms CTCF binding sites spanning 34-35bp [@Schmidt:2012uk]. The complexity of CTCF binding was also noted in the earlier study of motif discovery in conserved noncoding elements by Xie et al. [@Xie:2007wm], detecting LM3, LM7, and LM23 motifs as parts of CTCF binding.<!--Subsequently, $\sim80\%$ of CTCF conserved motifs were found to be bound by ZFs 4-7, while ZFs 1-2 and 8-11 bind to nonconserved flanking sequences, and ZFs 9-11 were associated with a second conserved motif [@Nakahashi:2013uw; @Pugacheva:2020wz].--> Studies have reported 20,000-50,000 CTCF binding sites within the human and mouse genomes<!--[@Kim:2007ux; @Nakahashi:2013uw; @Wang:2012ty]-->.
+<!-- CTCF binding has long been known to be critical for Topologically Associating Domain (TAD) and chromatin loop formation [@Dixon:2012aa; @Oti:2016aa; @Vietri-Rudan:2015aa]. Loops are formed via cohesin-mediated loop extrusion mechanism [@Alipour:2012aa; @Fudenberg:2016aa; @Goloborodko:2016vz; @Schwarzer:2016aa] with CTCF (in convergent orientation) and cohesin marking domain boundaries [@Nishana:2020tv; @Rao:2014aa; @Vietri-Rudan:2015tu; @Beagan:2020wz; @Stilianoudakis:2020aa; @Pugacheva:2020wz]. To demonstrate the use of CTCF data package, we provide a Python script that quantifies the proportion of loops -->
+
+CTCF binding profiles between different tissues exhibit substantial concordance [@Kim:2007ux].<!--For instance, up to 70% of binding sites are common between any two given cell types, while variability appears to result from differential DNA methylation [@Wang:2012ty].--> We aimed to provide uniformly detected strand-specific CTCF binding sites for the most studied human and mouse genomes. Given the differences in genome assemblies, we defined CTCF binding sites directly for each assembly, including the Telomere to Telomere (T2T) human genome assembly [@Nurk:2022up] and the GRCm39/mm39 mouse genome assembly. We demonstrate that coordinate conversion<!--of CTCF binding sites between genome assemblies--> (liftOver) is a viable way to obtain assembly-specific CTCF binding sites. We further demonstrate the need for filtering less significant CTCF binding sites.<!--Given the importance of CTCF binding in convergent orientation for forming chromatin loops [@Rao:2014aa; @Nanni:2020aa; @Vietri-Rudan:2015tu], we provide strand-specific CTCF binding sites indicating the directionality of CTCF binding.--> We also include selected experimental CTCF binding sites<!--to provide a comprehensive general-purpose collection of CTCF binding profiles.--> and assemble them in the CTCF R/Bioconductor package.
+
+# Implementation
+
+Position Weight Matrices (PWMs) [@Stormo:2000uw] of CTCF sequence motifs from Jaspar 2022 [@Castro-Mondragon:2022uv], HOCOMOCO v11 [@Kulakovskiy:2018vw], CIS-BP [@Weirauch:2014ul], Jolma 2013 [@Jolma:2013vd], and SwissRegulon [@Pachkov:2013uk] databases were downloaded from the MEME Motif database (`Table S1`). They were largely similar with the exception of Jolma 2013 and two long (34bp and 35bp) Jaspar PWMs (`Figure S1A`). The CTCF binding site database (CTCFBSDB) [@Ziebarth:2013vj] includes PWMs for the M1+M2 motifs [@Schmidt:2012uk], the Ren_20 motif [@Kim:2007ux], and the LM2, LM7, and LM23 motifs [@Xie:2007wm] (`Figure S1B`). The CIS-BP database [@Weirauch:2014ul] lists 83 human-specific and two mouse-specific PWMs (`Figure S1CD`). These PWMs were used to scan the human and mouse genomes for CTCF binding motifs using the FIMO tool from the MEME suite [@Bailey:2009aa].
+
+The CTCFBSDB database [@Bao:2008vq] is a dedicated resource of predicted CTCF binding sites for hg18 and mm8 genome assemblies<!-- for human (13,401 20bp-long sites) and mouse (5,504 sites) genomes. database has not been updated since 2013 and the predictions are available for hg18 and mm8 genome assemblies only--> (`Table S2`). As coordinate conversion (liftOver) is a well-established practice, we investigated Jaccard overlap among CTCF sites aligned to hg18, hg19, hg38, and T2T genome assemblies and their liftover counterparts. Expectedly, genome assembly was the primary driver of similarity (`Figure 1A`).<!--among sets of CTCF sites, irrespectively whether they were detected in the original genome assembly or lifted over from those detected in other assemblies. liftOver among hg18, hg19, and hg38 showed the highest Jaccard overlap (0.96-1.00), while CTCF sites lifted from hg19 and hg38 to T2T showed less overlap (0.92-0.93) due to the relatively large number of unmapped sites (`Table S2`). The mm10/mm9-detected CTCF binding sites also demonstrated good overlap between the originally detected and liftOver versions (`Figure S2A`). These results --> These results were observed using mm9/mm10/mm39 genome assemblies (`Figure S2A`), indicating that liftOver is a viable alternative to obtain CTCF sites in the required genome assembly. Using liftOver, we provide hg19/hg38 and mm9/mm10 versions of predicted CTCF sites from the CTCFBSDB database.
+
+The FIMO tool <!--as one of the oldest and most well-known tool for motif scanning. The tool uses a dynamic programming algorithm to convert log-odds scores of motif matching into p-values, assuming a zero-order background model [@Cuellar-Partida:2012wj]. -->uses the default p-value cutoff 1E-4 for CTCF motif detection. However, we observed that up to 98% of motifs have a detection p-value more than 1E-6 (`Figure 1B`, `Figure S2B`), suggesting most CTCF motifs have a relatively poor sequence match. Using the ENCODE SCREEN database of CTCF-bound cis-regulatory elements (cCREs) [@ENCODE-Project-Consortium:2020uq] as ground truth (`Table S2`, included in the package), we quantified the proportion of true and false positives depending on the FIMO p-value cutoff. We found 1E-6 threshold as the most optimal, providing $\sim80\%$ of true positive CTCF motifs. Additionally, given some databases provide multiple CTCF PWMs, FIMO detects many overlapping CTCF sites (`Table S3`). Reducing them (merging overlapping CTCF sites) in combination with 1E-6 cutoff filtering yields the number of CTCF sites comparable to previously reported. Although we provide FIMO results using the default settings, we recommend filtering and reducing them.
+
+# Discussion
+
+Our goal was to provide easy programmatic access to CTCF binding data applicable to any cell or tissue type. The CTCF package contains XX GRanges objects of strand-specific CTCF motifs predicted using 98 PWMs from six databases on human and mouse genome assemblies, including the T2T and mm39 assemblies (`Table S3`). Given the popularity of JASPAR database, we recommend using predictions made with the MA0139.1 PWM. If experimentally detected CTCF motifs are of interest, we suggest using CTCF-bound cCREs from the ENCODE SCREEN database. We hope the CTCF package will enable standardization and reproducibility of studies employing CTCF binding data.
+
+# Funding
+
+This work was supported by the George and Lavinia Blick Research Scholarship to MD.
+
+_Conflict of Interest._ None declared.
+
+# References
