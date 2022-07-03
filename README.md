@@ -1,6 +1,6 @@
 File name conventions: `<assembly>.<Database>.<original file name or label>`
 
-- `Logos.Rmd` - Logo clustering.
+- `01_Logos.Rmd` - Logo clustering.
     - Input: `/Users/mdozmorov/Documents/Data/GoogleDrive/CTCF.dev/motif_databases/*.meme` motif files
     - Output: `Figure_clustered_main_PWMs.svg`
     - Input: `/Users/mdozmorov/Documents/Data/GoogleDrive/CTCF.dev/Homo_sapiens_2022_05_20_3_16_pm/pwms_CTCF_motifs/CIS-BP_2.00_Homo_sapiens.meme`, created from combined .txt matrices
