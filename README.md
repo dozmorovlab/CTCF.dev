@@ -4,9 +4,9 @@ File name conventions: `<assembly>.<Database>.<original file name or label>`
     - Input: `/Users/mdozmorov/Documents/Data/GoogleDrive/CTCF.dev/motif_databases/*.meme` motif files
     - Output: `Figure_clustered_main_PWMs.svg`
     - Input: `/Users/mdozmorov/Documents/Data/GoogleDrive/CTCF.dev/Homo_sapiens_2022_05_20_3_16_pm/pwms_CTCF_motifs/CIS-BP_2.00_Homo_sapiens.meme`, created from combined .txt matrices
-    - Output: `CIS-BP_2.00_Homo_sapiens.svg`
+    - Output: `Figure_CIS-BP_2.00_Homo_sapiens.svg`
     - Input: `/Users/mdozmorov/Documents/Data/GoogleDrive/CTCF.dev/Mus_musculus_2022_05_20_4_01_pm/pwms_CTCF_motifs/CIS-BP_2.00_Mus_musculus.meme`, created from combined .txt matrices
-    - Output: `CIS-BP_2.00_Mus_musculus.svg`
+    - Output: `Figure_CIS-BP_2.00_Mus_musculus.svg`
     - Input: `/Users/mdozmorov/Documents/Data/GoogleDrive/CTCF.dev/CTCFBSDB_PWM_corrected.meme`
     - Output: `Figure_clustered_CTCFBSDB_PWMs.svg`
 
@@ -45,6 +45,8 @@ File name conventions: `<assembly>.<Database>.<original file name or label>`
 - `EDA_AnnotationHub.Rmd` - explore CTCF data on AnnotationHub and ExperimentHub
 
 # `data`
+
+- `PWMs` - PWMs used in the package. README there
 
 - `Chang_Noordermeer_2021.xlsx` - CTCF clusters at TAD boundaries, over extended genomic intervals, CTCF clusters correlate with insulation score. Nano-C and 4C-seq on mESC cells, detailed dissection of CTCF clustering and contribution to domain boundary formation. [Supplementary material](https://www.biorxiv.org/content/10.1101/2021.04.15.440007v1.supplementary-material): CTCF ChIP-seq peaks in mESCs, over 83K peaks with at least one significant CTCF binding motif, mm10, Extended Data Table 1. 
     - Chang, Li-Hsin, Sourav Ghosh, Andrea Papale, Mélanie Miranda, Vincent Piras, Jéril Degrouard, Mallory Poncelet, et al. “[A Complex CTCF Binding Code Defines TAD Boundary Structure and Function](https://doi.org/10.1101/2021.04.15.440007).” Preprint. Genetics, April 15, 2021.
