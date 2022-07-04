@@ -1,5 +1,3 @@
-File name conventions: `<assembly>.<Database>.<original file name or label>`
-
 - `01_Logos.Rmd` - Logo clustering.
     - Input: `/Users/mdozmorov/Documents/Data/GoogleDrive/CTCF.dev/motif_databases/*.meme` motif files
     - Output: `Figure_clustered_main_PWMs.svg`
@@ -10,36 +8,38 @@ File name conventions: `<assembly>.<Database>.<original file name or label>`
     - Input: `/Users/mdozmorov/Documents/Data/GoogleDrive/CTCF.dev/CTCFBSDB_PWM_corrected.meme`
     - Output: `Figure_clustered_CTCFBSDB_PWMs.svg`
 
-- `EDA_liftOver.Rmd` - overlap between originally aligned and lifted-over genomes
-    - Input: BED files from `/Users/mdozmorov/Documents/Data/GoogleDrive/CTCF.dev/CTCF_liftover`. liftOver chains obtained using `download.sh`. Processed with `convert.sh`.
-    - Output: `Figure_liftOverJaccard.svg`
-- `EDA_liftOver_mm.Rmd` - same for mm9-mm10
-
-- `EDA_SCREEN.Rmd` - Processing https://screen.encodeproject.org/. Basic stats, conversion to GRanges
+- `02_EDA_SCREEN.Rmd` - Processing https://screen.encodeproject.org/. Basic stats, conversion to GRanges
     - Input: `GRCh38-CTCF.bed` and `mm10-CTCF.bed`
     - Output: `hg38.SCREEN.GRCh38_CTCF`, `mm10.SCREEN.mm10_CTCF` granges objects and BED files
 
-- `EDA_CTCFBSDB.Rmd` - Processing CTCFBSDB, predicted data. Experimental data not used
+- `03_EDA_CTCFBSDB.Rmd` - Processing CTCFBSDB, predicted data. Experimental data not used
     - Input: `allcomp.txt.gz`, predicted data
     - Output: `hg18.CTCFBSDB.CTCF_predicted_human`, `mm8.CTCFBSDB.CTCF_predicted_mouse` granges objects and BED files
 
-- `FIMO_processing.Rmd` - Processing FIMO chromosome-specific results from merlot
-    - Input: `fimo.txt.gz` files from motif-, genome-, and chromosome-specific subfolders
-    - Output: `<assembly>.<Database>.FIMO` granges objects and BED file
+- `04_FIMO_processing.Rmd` - Processing FIMO chromosome-specific results from merlot. File name conventions: `<assembly>.<Database>.<original database name or label>`
+    - Input: `fimo.txt.gz` files from genome-, database-, and chromosome-specific subfolders
+    - Output: `<assembly>.<Database>.FIMO` granges objects and BED file. `log_PWMs.csv` - count statistics: "Assembly", "All (p-value threshold 1e-4)"", "Reduced (p-value threshold 1e-4)"", "All (p-value threshold 1e-6)"", "Reduced (p-value threshold 1e-6)"
+
+- `05_EDA_liftOver.Rmd` - overlap between originally aligned and lifted-over genomes
+    - Input: BED files from `/Users/mdozmorov/Documents/Data/GoogleDrive/CTCF.dev/CTCF_liftover`. liftOver chains obtained using `download.sh`. Processed with `convert.sh` that also outputs counts of mapped and unmapped regions to `log_liftOver.csv`
+    - Output: `Figure_liftOverJaccard.svg`
+- `05_EDA_liftOver_mm.Rmd` - same for mm9-mm10-mm39
+
+- `06_FIMO_EDA.Rmd` - exploratory analysis of p-value distributions for human and mouse genomes
+    - Input: hg38 and mm10 FIMO-detected sites
+    - Output: density plots of p-value distributions, `Figure_human_pvalues.svg`, `Figure_mouse_pvalues.svg`
+
+- `06_CTCF_Threshold.Rmd` - Exploring MEME p-value threshold cutoff
+    - Input: `GRCh38-CTCF.bed` ENCODE SCREEN CTCF cCREs as gold standard, `hg38.MA0139.1.bed` MEME CTCF sites
+    - Output: `Figure_human_pvalues_threshold.svg`
+-  `06_CTCF_Threshold_mm.Rmd` - same for mm9-mm10-mm39
+
+
 
 - `BED_to_BEDPE.Rmd` - Convert BED to paired BEDPE format
     - Input: PreciseTAD-predicted regions, `/Users/mdozmorov/Documents/Data/GoogleDrive/Avocado_preciseTAD/Maggie/GM12878/PTBR_Peakachu_outputs/`
     - Output: BEDPE files in the same folder
     
-- `FIMO_EDA.Rmd` - exploratory analysis of p-value distributions for human and mouse genomes
-    - Input: hg38 and mm10 FIMO-detected sites
-    - Output: density plots of p-value distributions, `Figure_human_pvalues.svg`, `Figure_mouse_pvalues.svg`
-
-- `CTCF_Threshold.Rmd` - Exploring MEME p-value threshold cutoff
-    - Input: `GRCh38-CTCF.bed` ENCODE SCREEN CTCF cCREs as gold standard, `hg38.JASPAR2022_MA0139.1.bed` MEME CTCF sites
-    - Output: `results/Figure_human_pvalues_threshold.svg`
-
-
 - `EDA_Chang_Noordermeer_2021.Rmd` - Processing `Chang_Noordermeer_2021.xlsx`
 - `EDA_PWMScan.Rmd` - PWMScan analysis
 - `EDA_AnnotationHub.Rmd` - explore CTCF data on AnnotationHub and ExperimentHub

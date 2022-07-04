@@ -33,24 +33,26 @@ library(rtracklayer)
 
 ```{r settings}
 # Project folder path
-dir_data <- "/Users/mdozmorov/Documents/Work/GitHub/CTCF.dev"
+dir_project <- "/Users/mdozmorov/Documents/Work/GitHub/CTCF.dev"
 
 # Input files
 # Predicted data
-fileNameIn1 <- file.path(dir_data, "data/allcomp.txt.gz")
-# download.file("https://insulatordb.uthsc.edu/download/allcomp.txt.gz", fileNameIn1)
+fileNameIn1 <- file.path(dir_project, "data/allcomp.txt.gz")
+if (!file.exists(fileNameIn1)) {
+  download.file("https://insulatordb.uthsc.edu/download/allcomp.txt.gz", fileNameIn1)
+}
 # Experimental data
-fileNameIn2 <- file.path(dir_data, "data/CTCFBSDB_all_exp_sites_Sept12_2012.txt.gz")
+fileNameIn2 <- file.path(dir_project, "data/CTCFBSDB_all_exp_sites_Sept12_2012.txt.gz")
 # download.file("https://insulatordb.uthsc.edu/download/CTCFBSDB_all_exp_sites_Sept12_2012.txt.gz", fileNameIn2)
 # Output files
-fileNameOut1 <- file.path(dir_data, "results/hg18.CTCFBSDB.CTCF_predicted_human.RData")
-fileNameOut1.1 <- file.path(dir_data, "results/hg18.CTCFBSDB.CTCF_predicted_human.bed")
-fileNameOut2 <- file.path(dir_data, "results/mm8.CTCFBSDB.CTCF_predicted_mouse.RData")
-fileNameOut2.1 <- file.path(dir_data, "results/mm8.CTCFBSDB.CTCF_predicted_mouse.bed")
-# fileNameOut3 <- file.path(dir_data, "results/hg19.CTCFBSDB.CTCF_experimental_human.RData")
-# fileNameOut3.1 <- file.path(dir_data, "results/hg19.CTCFBSDB.CTCF_experimental_human.bed")
-# fileNameOut4 <- file.path(dir_data, "results/mm9.CTCFBSDB.CTCF_experimental_mouse.RData")
-# fileNameOut4.1 <- file.path(dir_data, "results/mm9.CTCFBSDB.CTCF_experimental_mouse.bed")
+fileNameOut1 <- file.path(dir_project, "RData", "hg18.CTCFBSDB.CTCF_predicted_human.RData")
+fileNameOut1.1 <- file.path(dir_project, "RData", "hg18.CTCFBSDB.CTCF_predicted_human.bed")
+fileNameOut2 <- file.path(dir_project, "RData", "mm8.CTCFBSDB.CTCF_predicted_mouse.RData")
+fileNameOut2.1 <- file.path(dir_project, "RData", "mm8.CTCFBSDB.CTCF_predicted_mouse.bed")
+# fileNameOut3 <- file.path(dir_project, "results/hg19.CTCFBSDB.CTCF_experimental_human.RData")
+# fileNameOut3.1 <- file.path(dir_project, "results/hg19.CTCFBSDB.CTCF_experimental_human.bed")
+# fileNameOut4 <- file.path(dir_project, "results/mm9.CTCFBSDB.CTCF_experimental_mouse.RData")
+# fileNameOut4.1 <- file.path(dir_project, "results/mm9.CTCFBSDB.CTCF_experimental_mouse.bed")
 ```
 
 # Load PREDICTED data
@@ -116,17 +118,16 @@ export.bed(hg18.CTCFBSDB.CTCF_predicted_human, fileNameOut1.1)
 export.bed(mm8.CTCFBSDB.CTCF_predicted_mouse, fileNameOut2.1)
 ```
 
+```{r eval=FALSE}
 # Load EXPERIMENTAL data
 
-```{r eval=FALSE}
 # Read in data
 mtx <- read_tsv(fileNameIn2)
 ```
 
-
+```{r eval=FALSE}
 ## EDA
 
-```{r eval=FALSE}
 # head(mtx, n = 100) %>% View()
 colnames(mtx)
 table(mtx$Species)
@@ -142,9 +143,9 @@ summary(mtx$ENCODE_Peak)
 table(mtx$M1M2_class)
 ```
 
+```{r eval=FALSE}
 ## GRanges
 
-```{r eval=FALSE}
 mtx_to_gr <- function(mtx = mtx, org = "Rhesus") {
   mtx_selected <- mtx[mtx$Species == org, ]
   gr <- GRanges(seqnames = mtx_selected$Chr, IRanges(start = mtx_selected$GenomeBeginLoc, end = mtx_selected$GenomeEndLoc))
@@ -189,7 +190,7 @@ organisms <- unique(mtx$Species)
 #   print(i)
 #   gr <- mtx_to_gr(mtx, org = i)
 #   # Output files
-#   fileNameOut1 <- file.path(dir_data, paste0("results/CTCF_", i, "_CTCFBSDB_experimental.RData"))
+#   fileNameOut1 <- file.path(dir_project, paste0("results/CTCF_", i, "_CTCFBSDB_experimental.RData"))
 #   # Save as RData object. 
 #   # save(list = mtx_to_gr(mtx = mtx_human, genome_id = "hg19"), file = fileNameOut1)
 # }

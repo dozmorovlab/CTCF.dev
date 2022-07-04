@@ -40,12 +40,19 @@ library(rtracklayer)
 ```{r settings}
 # Project folder path
 dir_data <- "/Users/mdozmorov/Documents/Data/GoogleDrive/CTCF.dev/merlot"
+dir_project <- "/Users/mdozmorov/Documents/Work/GitHub/CTCF.dev/"
+# Rename motif folders to replace "-" by "_"
+# for file in `find . -type d -name "*-*"`; do newfile=`echo $file | sed 's/-/_/g'`; mv $file $newfile; done
+# Capitalize Jolma
+# for file in `find . -type d -name "jolma*"`; do newfile=`echo $file | sed 's/j/J/'`; mv $file $newfile; done
+# Remove "_corrected"
+# for file in `find . -type d -name "*_corrected*"`; do newfile=`echo $file | sed 's/_corrected//'`; mv $file $newfile; done
 # Motifs
-motif_human  <- c("CIS_BP_2.00_Homo_sapiens", "CTCFBSDB_PWM", "HOCOMOCOv11_core_HUMAN_mono_meme_format", "JASPAR2022_CORE_vertebrates_non_redundant_v2", "jolma2013", "SwissRegulon_human_and_mouse")
-motif_mouse  <- c("CIS_BP_2.00_Mus_musculus", "CTCFBSDB_PWM", "HOCOMOCOv11_core_MOUSE_mono_meme_format", "JASPAR2022_CORE_vertebrates_non_redundant_v2", "jolma2013", "SwissRegulon_human_and_mouse")
+motif_human  <- c("CIS_BP_2.00_Homo_sapiens", "CTCFBSDB_PWM", "HOCOMOCOv11_core_HUMAN_mono_meme_format", "JASPAR2022_CORE_vertebrates_non_redundant_v2", "Jolma2013", "SwissRegulon_human_and_mouse")
+motif_mouse  <- c("CIS_BP_2.00_Mus_musculus", "CTCFBSDB_PWM", "HOCOMOCOv11_core_MOUSE_mono_meme_format", "JASPAR2022_CORE_vertebrates_non_redundant_v2", "Jolma2013", "SwissRegulon_human_and_mouse")
 # Genomes
 genome_human <- c("T2T", "hg38", "hg19")
-genome_mouse <- c("mm10", "mm9")
+genome_mouse <- c("mm10", "mm9", "mm39")
 # Chromosomes
 chromosome_human <- c("chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12", "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr19", "chr20", "chr21", "chr22", "chrX", "chrY")
 chromosome_mouse <- c("chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12", "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr19", "chrX", "chrY")
@@ -57,11 +64,12 @@ fileNameIn1 <- file.path(dir_data, "")
 # Process data
 
 ```{r data}
+# Function to combine database- and chromosome-specific FIMO results for a given genome assembly
 combine_fimo <- function(motif = "SwissRegulon_human_and_mouse", genome_id = "T2T", chromosomes = chromosome_human) {
   ctcfGR <- c()
   for(chrom in chromosomes) {
     # print(chrom)
-    fileNameIn <- file.path(dir_data, paste(motif, genome_id, chrom, sep = "_"), "fimo.txt.gz")
+    fileNameIn <- file.path(dir_data, "results", paste(motif, genome_id, chrom, sep = "_"), "fimo.txt.gz")
     # Read "fimo.bed" created by "fimo.qsub"
     ctcfBED <- read_tsv(fileNameIn, col_types = c("ccddcdddc"))
     # Convert to GRanges object
@@ -115,8 +123,8 @@ combine_fimo <- function(motif = "SwissRegulon_human_and_mouse", genome_id = "T2
   }
 
   ctcfGR_to_save <- paste(genome_id, motif, sep = ".")
-  fileNameOut1 <- file.path(dir_data, paste0(ctcfGR_to_save, ".RData"))
-  fileNameOut1.1 <- file.path(dir_data, paste0(ctcfGR_to_save, ".bed"))
+  fileNameOut1 <- file.path(dir_project, "RData", paste0(ctcfGR_to_save, ".RData"))
+  fileNameOut1.1 <- file.path(dir_project, "RData", paste0(ctcfGR_to_save, ".bed"))
   # Assign this object to the subfolder-specific variable name
   assign(ctcfGR_to_save, ctcfGR)
   # Save as RData object. ctcfGR_to_save is the character name of the CTCF GRanges variable
@@ -129,11 +137,11 @@ combine_fimo <- function(motif = "SwissRegulon_human_and_mouse", genome_id = "T2
 }
 ```
 
-# Human data liftOver
+# Human data for liftOver
 
-```{r hg18}
+```{r hg}
 for (gen in c("hg18", genome_human)) {
-  for (mot in "JASPAR2022_MA0139.1") {
+  for (mot in "MA0139.1") {
     print(paste(gen, mot, sep = "."))
     combine_fimo(motif = mot, genome_id = gen, chromosomes = chromosome_human)
   }
@@ -152,12 +160,12 @@ for (gen in genome_human) {
 }
 ```
 
-# Mouse data liftOver
+# Mouse data for liftOver
 
-```{r hg18}
+```{r mm}
 for (gen in c(genome_mouse)) {
   for (mot in "MA0139.1") {
-    print(paste(gen, paste0("JASPAR2022_", mot), sep = "."))
+    print(paste(gen, mot, sep = "."))
     combine_fimo(motif = mot, genome_id = gen, chromosomes = chromosome_mouse)
   }
 }
@@ -185,12 +193,11 @@ for (gen in genome_mouse) {
 # done
 # 
 # Output files
-fileNameOut1 <- file.path(dir_data, "log_PWMs.csv")
+fileNameOut1 <- file.path(dir_project, "results", "log_PWMs.csv")
 if (file.exists(fileNameOut1)) { file.remove(fileNameOut1) }
 # Defined from FIMO_EDA
 pval_threshold <- 1e-6
-files <- list.files(dir_data, pattern = "*MA0139.1.bed", full.names = TRUE)
-files <- files[grepl("mm", files)]
+files <- list.files(file.path(dir_project, "RData"), pattern = "bed", full.names = TRUE)
 for (fil in files) {
   print(basename(fil) %>% str_remove(., ".bed"))
   mtx <- read_tsv(fil, col_names = FALSE, col_types = c("ciicdciddc"))

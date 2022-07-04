@@ -47,10 +47,10 @@ dir_data <- "/Users/mdozmorov/Documents/Data/GoogleDrive/CTCF.dev"
 dir_project <- "/Users/mdozmorov/Documents/Work/GitHub/CTCF.dev"
 
 # Input files
-fileNameIn1 <- file.path(dir_project, "RData", "hg38.MA0139.1.bed")
-fileNameIn2 <- file.path(dir_project, "data", "GRCh38-CTCF.bed")
+fileNameIn1 <- file.path(dir_project, "RData", "mm10.MA0139.1.bed")
+fileNameIn2 <- file.path(dir_project, "data", "mm10-CTCF.bed")
 # Output files
-fileNameOut1 <- file.path(dir_project, "results", "Figure_human_pvalues_threshold.svg")
+fileNameOut1 <- file.path(dir_project, "results", "Figure_mouse_pvalues_threshold.svg")
 ```
 
 # Load data

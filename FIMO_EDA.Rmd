@@ -43,12 +43,13 @@ col3 <- colorRampPalette(c('blue', 'white', 'red'))(20)
 
 ```{r settings}
 dir_data <- "/Users/mdozmorov/Documents/Data/GoogleDrive/CTCF.dev/merlot"
+dir_project <- "/Users/mdozmorov/Documents/Work/GitHub/CTCF.dev"
 # Motifs
-motif_human  <- c("CIS_BP_2.00_Homo_sapiens", "CTCFBSDB_PWM", "HOCOMOCOv11_core_HUMAN_mono_meme_format", "JASPAR2022_CORE_vertebrates_non_redundant_v2", "jolma2013", "SwissRegulon_human_and_mouse")
-motif_mouse  <- c("CIS_BP_2.00_Mus_musculus", "CTCFBSDB_PWM", "HOCOMOCOv11_core_MOUSE_mono_meme_format", "JASPAR2022_CORE_vertebrates_non_redundant_v2", "jolma2013", "SwissRegulon_human_and_mouse")
+motif_human  <- c("CIS_BP_2.00_Homo_sapiens", "CTCFBSDB_PWM", "HOCOMOCOv11_core_HUMAN_mono_meme_format", "JASPAR2022_CORE_vertebrates_non_redundant_v2", "Jolma2013", "SwissRegulon_human_and_mouse")
+motif_mouse  <- c("CIS_BP_2.00_Mus_musculus", "CTCFBSDB_PWM", "HOCOMOCOv11_core_MOUSE_mono_meme_format", "JASPAR2022_CORE_vertebrates_non_redundant_v2", "Jolma2013", "SwissRegulon_human_and_mouse")
 # Genomes
 genome_human <- c("T2T", "hg38", "hg19")
-genome_mouse <- c("mm10", "mm9")
+genome_mouse <- c("mm10", "mm9", "mm39")
 ```
 
 ```{r hg18, eval=FALSE}
@@ -58,8 +59,8 @@ pval_threshold <- 1e-6
 for (gen in c("hg18", genome_human)) {
   for (mot in "JASPAR2022_MA0139.1") {
     print(paste(gen, mot, sep = "."))
+    fileNameIn <- file.path(dir_project, paste(gen, mot, "bed", sep = "."))
     mtx <- read_tsv(fileNameIn, col_names = FALSE, col_types = c("ciicdciddc"))
-    fileNameIn <- file.path(dir_data, paste(gen, mot, "bed", sep = "."))
     print(paste("Number of regions more significant than the p-value threshold:", round(sum(mtx$X8 < pval_threshold), digits = 5) ))
     print(paste("Proportion of regions more significant than the p-value threshold:", round(sum(mtx$X8 < pval_threshold) / nrow(mtx), digits = 5) ))
     pvals <- rbind(pvals, cbind(-log10(mtx$X8), rep(gen, nrow(mtx))))
@@ -83,7 +84,7 @@ pval_threshold <- 1e-6
 for (gen in "hg38") {
   for (mot in motif_human) {
     print(paste(gen, mot, sep = "."))
-    fileNameIn <- file.path(dir_data, paste(gen, mot, "bed", sep = "."))
+    fileNameIn <- file.path(dir_project, "RData", paste(gen, mot, "bed", sep = "."))
     mtx <- read_tsv(fileNameIn, col_names = FALSE, col_types = c("ciicdciddc"))
     print(paste("Number of regions more significant than the p-value threshold:", round(sum(mtx$X8 < pval_threshold), digits = 5) ))
     print(paste("Proportion of regions more significant than the p-value threshold:", round(sum(mtx$X8 < pval_threshold) / nrow(mtx), digits = 5) ))
@@ -108,7 +109,7 @@ ggplot(pvals, aes(x = `-log10(p-value)`, color = MotifDB)) +
       # legend.key.width = unit(5, "mm")) +
   ylab("Density")
 
-fileNameOut1 <- file.path(dir_data, "Figure_human_pvalues.svg")
+fileNameOut1 <- file.path(dir_project, "results", "Figure_human_pvalues.svg")
 ggsave(filename = fileNameOut1, width = 6.4, height = 1.6)
 
 # dev.off()
@@ -126,7 +127,7 @@ pval_threshold <- 1e-6
 for (gen in "mm10") {
   for (mot in motif_mouse) {
     print(paste(gen, mot, sep = "."))
-    fileNameIn <- file.path(dir_data, paste(gen, mot, "bed", sep = "."))
+    fileNameIn <- file.path(dir_project, "RData", paste(gen, mot, "bed", sep = "."))
     mtx <- read_tsv(fileNameIn, col_names = FALSE, col_types = c("ciicdciddc"))
     print(paste("Number of regions more significant than the p-value threshold:", round(sum(mtx$X8 < pval_threshold), digits = 5) ))
     print(paste("Proportion of regions more significant than the p-value threshold:", round(sum(mtx$X8 < pval_threshold) / nrow(mtx), digits = 5) ))
@@ -151,10 +152,10 @@ p <- ggplot(pvals, aes(x = `-log10(p-value)`, color = MotifDB)) +
       # legend.key.width = unit(5, "mm")) +
   ylab("Density")
 
-fileNameOut1 <- file.path(dir_data, "Figure_mouse_pvalues.svg")
+fileNameOut1 <- file.path(dir_project, "results", "Figure_mouse_pvalues.svg")
 # ggsave(filename = fileNameOut1, width = 7, height = 3)
 dev.off()
-svg(filename = fileNameOut1, width = 7, height = 3)
+svg(filename = fileNameOut1, width = 6.4, height = 1.6)
 print(p)
 dev.off()
 ```

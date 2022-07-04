@@ -33,20 +33,24 @@ library(rtracklayer)
 
 ```{r settings}
 # Project folder path
-dir_data <- "/Users/mdozmorov/Documents/Work/GitHub/CTCF.dev"
+dir_project <- "/Users/mdozmorov/Documents/Work/GitHub/CTCF.dev"
 
 # Input files
 # Human CTCF-bound cCRE (hg38)
-fileNameIn1 <- file.path(dir_data, "data/GRCh38-CTCF.bed")
-# download.file("https://api.wenglab.org/screen_v13/fdownloads/cCREs/GRCh38-CTCF.bed", fileNameIn1)
+fileNameIn1 <- file.path(dir_project, "data/GRCh38-CTCF.bed")
+if (!file.exists(fileNameIn1)) {
+  download.file("https://api.wenglab.org/screen_v13/fdownloads/cCREs/GRCh38-CTCF.bed", fileNameIn1)
+}
 # Mouse CTCF-bound cCRE (mm10)
-fileNameIn2 <- file.path(dir_data, "data/mm10-CTCF.bed")
-# download.file("https://api.wenglab.org/screen_v13/fdownloads/cCREs/mm10-CTCF.bed", fileNameIn2)
+fileNameIn2 <- file.path(dir_project, "data/mm10-CTCF.bed")
+if (!file.exists(fileNameIn2)) {
+  download.file("https://api.wenglab.org/screen_v13/fdownloads/cCREs/mm10-CTCF.bed", fileNameIn2)
+}
 # Output files
-fileNameOut1 <- file.path(dir_data, "results/hg38.SCREEN.GRCh38_CTCF.RData")
-fileNameOut1.1 <- file.path(dir_data, "results/hg38.SCREEN.GRCh38_CTCF.bed")
-fileNameOut2 <- file.path(dir_data, "results/mm10.SCREEN.mm10_CTCF.RData")
-fileNameOut2.1 <- file.path(dir_data, "results/mm10.SCREEN.mm10_CTCF.bed")
+fileNameOut1 <- file.path(dir_project, "RData", "hg38.SCREEN.GRCh38_CTCF.RData")
+fileNameOut1.1 <- file.path(dir_project, "RData", "hg38.SCREEN.GRCh38_CTCF.bed")
+fileNameOut2 <- file.path(dir_project, "RData", "mm10.SCREEN.mm10_CTCF.RData")
+fileNameOut2.1 <- file.path(dir_project, "RData", "mm10.SCREEN.mm10_CTCF.bed")
 ```
 
 PLS/pELS/dELS - Promoter-Like Signatures, proximal/distal Enhancer-Like Signatures
@@ -98,7 +102,9 @@ mtx_to_gr <- function(mtx = mtx_human, genome_id = "hg38") {
 
   return(gr)
 }
+```
 
+```{r}
 hg38.SCREEN.GRCh38_CTCF <- mtx_to_gr(mtx = mtx_human, genome_id = "hg38")
 length(hg38.SCREEN.GRCh38_CTCF)
 summary(width(hg38.SCREEN.GRCh38_CTCF))
@@ -107,8 +113,8 @@ length(mm10.SCREEN.mm10_CTCF)
 summary(width(mm10.SCREEN.mm10_CTCF))
 
 # Save as RData object. subdir is the character name of the CTCF GRanges variable
-save(list = hg38.SCREEN.GRCh38_CTCF, file = fileNameOut1)
-save(list = mm10.SCREEN.mm10_CTCF, file = fileNameOut2)
+save(list = "hg38.SCREEN.GRCh38_CTCF", file = fileNameOut1)
+save(list = "mm10.SCREEN.mm10_CTCF", file = fileNameOut2)
 # load(file = paste0(subdir, ".RData"))
 # Save BED files
 export.bed(hg38.SCREEN.GRCh38_CTCF, fileNameOut1.1)
