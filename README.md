@@ -18,7 +18,7 @@
 
 - `04_FIMO_processing.Rmd` - Processing FIMO chromosome-specific results from merlot. File name conventions: `<assembly>.<Database>.<original database name or label>`
     - Input: `fimo.txt.gz` files from genome-, database-, and chromosome-specific subfolders
-    - Output: `<assembly>.<Database>.FIMO` granges objects and BED file. `log_PWMs.csv` - count statistics: "Assembly", "All (p-value threshold 1e-4)"", "Reduced (p-value threshold 1e-4)"", "All (p-value threshold 1e-6)"", "Reduced (p-value threshold 1e-6)"
+    - Output: `<assembly>.<Database>.FIMO` granges objects and BED file. `log_PWMs.csv` - count statistics: "Assembly", "All (p-value threshold 1e-4)", "Reduced (p-value threshold 1e-4)", "All (p-value threshold 1e-6)", "Reduced (p-value threshold 1e-6)"
 
 - `05_EDA_liftOver.Rmd` - overlap between originally aligned and lifted-over genomes
     - Input: BED files from `/Users/mdozmorov/Documents/Data/GoogleDrive/CTCF.dev/CTCF_liftover`. liftOver chains obtained using `download.sh`. Processed with `convert.sh` that also outputs counts of mapped and unmapped regions to `log_liftOver.csv`
