@@ -96,7 +96,7 @@ for (i in 1:length(thresholds)) {
 gr_summary <- data.frame(Threshold = thresholds, TP = gr_meme_pos_list, FP = gr_meme_neg_list)
 
 mtx_to_plot <- pivot_longer(gr_summary, cols = c("TP", "FP"), names_to = "Type")
-ggplot(mtx_to_plot, aes(x = Threshold, y = value, color = Type)) +
+p <- ggplot(mtx_to_plot, aes(x = Threshold, y = value, color = Type)) +
   geom_line() +
   scale_x_continuous(breaks = thresholds, labels = scientific) +
   scale_y_continuous(breaks = seq(0, 1, 0.2))   + 
@@ -113,11 +113,11 @@ ggplot(mtx_to_plot, aes(x = Threshold, y = value, color = Type)) +
   xlab("FIMO p-value threshold") +
   ylab("FP/TP rate")
 
-ggsave(filename = fileNameOut1, width = 4.5, height = 1.5)
-# dev.off()
-# svg(filename = fileNameOut1, width = 7, height = 3)
-# print(p)
-# dev.off()
+# ggsave(filename = fileNameOut1, width = 4.5, height = 1.5)
+dev.off()
+svg(filename = fileNameOut1, width = 4.5, height = 1.5)
+print(p)
+dev.off()
 
 ```
 
