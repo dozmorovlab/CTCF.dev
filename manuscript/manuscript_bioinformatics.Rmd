@@ -84,7 +84,7 @@ The FIMO tool is one of the oldest and most well-known tool for motif scanning. 
 
 # Discussion
 
-Our goal was to provide easy programmatic access to CTCF binding data applicable to any cell or tissue type. The CTCF package contains 43 GRanges objects of strand-specific CTCF motifs predicted using 98 PWMs from six databases on human and mouse genome assemblies, including the T2T and mm39 assemblies (`Table S3`). Given the popularity of the JASPAR database, we recommend using predictions made with the MA0139.1 PWM, selecting sites detected at 1E-6 p-value cutoff, and merging overlapping sites. If experimentally detected CTCF sites are of interest, we suggest using CTCF-bound cCREs from the ENCODE SCREEN database. We hope the CTCF package will enable standardization and reproducibility of studies employing CTCF binding data.
+Our goal was to provide easy programmatic access to CTCF binding data applicable to any cell or tissue type. The CTCF package contains 51 GRanges objects of strand-specific CTCF motifs predicted using 98 PWMs from six databases on human and mouse genome assemblies, including the T2T and mm39 assemblies (`Table S3`). Given the popularity of the JASPAR database, we recommend using predictions made with the MA0139.1 PWM, selecting sites detected at 1E-6 p-value cutoff, and merging overlapping sites. If experimentally detected CTCF sites are of interest, we suggest using CTCF-bound cCREs from the ENCODE SCREEN database. We hope the CTCF package will enable standardization and reproducibility of studies employing CTCF binding data.
 
 # Funding
 
