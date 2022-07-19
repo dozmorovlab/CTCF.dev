@@ -8,15 +8,15 @@
     - Input: `/Users/mdozmorov/Documents/Data/GoogleDrive/CTCF.dev/CTCFBSDB_PWM_corrected.meme`
     - Output: `Figure_clustered_CTCFBSDB_PWMs.svg`
 
-- `02_EDA_SCREEN.Rmd` - Processing https://screen.encodeproject.org/. Basic stats, conversion to GRanges
+- `02_EDA_SCREEN.Rmd` - Download and Process https://screen.encodeproject.org/. Basic stats, conversion to GRanges
     - Input: `GRCh38-CTCF.bed` and `mm10-CTCF.bed`
     - Output: `hg38.SCREEN.GRCh38_CTCF`, `mm10.SCREEN.mm10_CTCF` granges objects and BED files
 
-- `03_EDA_CTCFBSDB.Rmd` - Processing CTCFBSDB, predicted data. Experimental data not used
+- `03_EDA_CTCFBSDB.Rmd` - Download and Process CTCFBSDB, predicted data. Experimental data not used
     - Input: `allcomp.txt.gz`, predicted data
     - Output: `hg18.CTCFBSDB.CTCF_predicted_human`, `mm8.CTCFBSDB.CTCF_predicted_mouse` granges objects and BED files
 
-- `04_FIMO_processing.Rmd` - Processing FIMO chromosome-specific results from merlot. File name conventions: `<assembly>.<Database>.<original database name or label>`
+- `04_FIMO_processing.Rmd` - Processing FIMO chromosome-specific results precessed on an HPC cluster. See [scripts](scripts) for more details. File name conventions: `<assembly>.<Database>.<original database name or label>`
     - Input: `fimo.txt.gz` files from genome-, database-, and chromosome-specific subfolders
     - Output: `<assembly>.<Database>.FIMO` granges objects and BED file. `log_PWMs.csv` - count statistics: "Assembly", "All (p-value threshold 1e-4)", "Reduced (p-value threshold 1e-4)", "All (p-value threshold 1e-6)", "Reduced (p-value threshold 1e-6)"
 
