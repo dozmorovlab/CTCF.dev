@@ -1,0 +1,77 @@
+#!/bin/bash
+#PBS -S /bin/bash
+#PBS -l nodes=1
+#PBS -M mdozmorov@vcu.edu
+#PBS -m ae
+#PBS -N fimo
+#PBS -j oe
+#PBS -q workq
+# PBS -V
+
+cd $PBS_O_WORKDIR
+
+source activate meme
+
+DIRIN=/home/sequencing/juicer/Mikhail/CTCF.dev
+MOTIF=( CIS-BP_2.00_Homo_sapiens.meme CTCFBSDB_PWM_corrected.meme HOCOMOCOv11_core_HUMAN_mono_meme_format.meme JASPAR2022_CORE_vertebrates_non-redundant_v2.meme jolma2013_corrected.meme SwissRegulon_human_and_mouse.meme )
+
+SUFFIX=( T2T hg38 hg19 )
+for ASSEMBLY in ${SUFFIX[@]}; do
+	DIRGENOME=/home/sequencing/data/ExtData/UCSC/${ASSEMBLY}/CHR
+	GENOME=( `ls ${DIRGENOME}` )
+	for PWM in ${MOTIF[@]}; do
+		for CHR in ${GENOME[@]}; do	
+			DIROUT=${DIRIN}/`basename ${PWM} .meme`_${ASSEMBLY}_`basename ${CHR} .fa`
+			fimo -o ${DIROUT} --max-stored-scores 1000000 ${DIRIN}/PWMs/${PWM} ${DIRGENOME}/${CHR}
+		done
+	done
+done
+
+DIRIN=/home/sequencing/juicer/Mikhail/CTCF.dev
+MOTIF=( CIS-BP_2.00_Mus_musculus.meme CTCFBSDB_PWM_corrected.meme HOCOMOCOv11_core_MOUSE_mono_meme_format.meme JASPAR2022_CORE_vertebrates_non-redundant_v2.meme jolma2013_corrected.meme SwissRegulon_human_and_mouse.meme )
+
+SUFFIX=( mm9 mm10 mm39 )
+for ASSEMBLY in ${SUFFIX[@]}; do
+	DIRGENOME=/home/sequencing/data/ExtData/UCSC/${ASSEMBLY}/CHR
+	GENOME=( `ls ${DIRGENOME}` )
+	for PWM in ${MOTIF[@]}; do
+		for CHR in ${GENOME[@]}; do	
+			DIROUT=${DIRIN}/`basename ${PWM} .meme`_${ASSEMBLY}_`basename ${CHR} .fa`
+			fimo -o ${DIROUT} --max-stored-scores 1000000 ${DIRIN}/PWMs/${PWM} ${DIRGENOME}/${CHR}
+		done
+	done
+done
+
+# For Human liftover
+DIRIN=/home/sequencing/juicer/Mikhail/CTCF.dev
+MOTIF=( MA0139.1.meme )
+
+SUFFIX=( hg18 hg19 hg38 T2T )
+for ASSEMBLY in ${SUFFIX[@]}; do
+	DIRGENOME=/home/sequencing/data/ExtData/UCSC/${ASSEMBLY}/CHR
+	GENOME=( `ls ${DIRGENOME}` )
+	for PWM in ${MOTIF[@]}; do
+		for CHR in ${GENOME[@]}; do	
+			DIROUT=${DIRIN}/`basename ${PWM} .meme`_${ASSEMBLY}_`basename ${CHR} .fa`
+			fimo -o ${DIROUT} --max-stored-scores 1000000 ${DIRIN}/PWMs/${PWM} ${DIRGENOME}/${CHR}
+		done
+	done
+done
+
+# For Mouse liftover
+DIRIN=/home/sequencing/juicer/Mikhail/CTCF.dev
+MOTIF=( MA0139.1.meme )
+
+SUFFIX=( mm9 mm10 mm39 )
+for ASSEMBLY in ${SUFFIX[@]}; do
+	DIRGENOME=/home/sequencing/data/ExtData/UCSC/${ASSEMBLY}/CHR
+	GENOME=( `ls ${DIRGENOME}` )
+	for PWM in ${MOTIF[@]}; do
+		for CHR in ${GENOME[@]}; do	
+			DIROUT=${DIRIN}/`basename ${PWM} .meme`_${ASSEMBLY}_`basename ${CHR} .fa`
+			fimo -o ${DIROUT} --max-stored-scores 1000000 ${DIRIN}/PWMs/${PWM} ${DIRGENOME}/${CHR}
+		done
+	done
+done
+
+conda deactivate
