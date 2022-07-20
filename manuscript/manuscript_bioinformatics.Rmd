@@ -25,7 +25,7 @@ dir_data <- "/Users/mdozmorov/Documents/Work/GitHub/CTCF.dev"
 
 # CTCF: An R/Bioconductor data package of human and mouse CTCF binding sites
 
-Mikhail G. Dozmorov^1,2,\*^, Wancen Mu^3^, Eric S. Davis^5^, Stuart Lee^13,14^, Tim Triche^10,11,12^, Douglas Phanstiel^5,6,7,8,9^, Michael I. Love^3,4^  
+Mikhail G. Dozmorov^1,2,\*^, Wancen Mu^3^, Eric S. Davis^5^, Stuart Lee^13,14^, Timothy J. Triche, Jr.^10,11,12^, Douglas Phanstiel^5,6,7,8,9^, Michael I. Love^3,4^  
 
 ^1^Department of Biostatistics, Virginia Commonwealth University, Richmond, VA, 23298, USA.
 
@@ -59,7 +59,7 @@ Mikhail G. Dozmorov^1,2,\*^, Wancen Mu^3^, Eric S. Davis^5^, Stuart Lee^13,14^, 
 
 # Abstract
 
-**Summary:** CTCF (CCCTC-binding factor) is considered the master regulator of the genome's structure and function. The diversity of CTCF binding motifs leads to the lack of a unified source of CTCF binding data. We collected position weight matrices of CTCF binding motifs and defined strand-oriented CTCF binding sites in the human and mouse genome assemblies, including the Telomere to Telomere human and mm39 mouse genomes. We also included selected experimentally determined and predicted CTCF binding sites, such as CTCF-bound cis-regulatory element from SCREEN ENCODE. We recommend filtering less significant CTCF binding motifs and demonstrate that liftOver is a viable option to convert CTCF coordinates between genome assemblies. Our comprehensive data resource and usage recommendations will strengthen reproducibility of genomic studies utilizing CTCF binding data.
+**Summary:** CTCF (CCCTC-binding factor) is an 11-zinc-finger DNA binding protein which regulates much of the eukaryotic genome’s 3-dimensional structure and function. The diversity of CTCF binding motifs has led to a fragmented landscape of CTCF binding data. We collected position weight matrices of CTCF binding motifs and defined strand-oriented CTCF binding sites in the human and mouse genomes, including the recent Telomere to Telomere (T2T) and mm39 assemblies. We included selected experimentally determined and predicted CTCF binding sites, such as CTCF-bound cis-regulatory elements from SCREEN ENCODE. We recommend filtering strategies for CTCF binding motifs and demonstrate that liftOver is a viable alternative to convert CTCF coordinates between assemblies. Our comprehensive data resource and usage recommendations can serve to harmonize and strengthen reproducibility of genomic studies utilizing CTCF binding data.
 
 **Availability:** https://bioconductor.org/packages/CTCF  
 **Contact:** mdozmorov@vcu.edu  
