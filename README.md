@@ -12,11 +12,11 @@
     - Input: `GRCh38-CTCF.bed` and `mm10-CTCF.bed`
     - Output: `hg38.SCREEN.GRCh38_CTCF`, `mm10.SCREEN.mm10_CTCF` granges objects and BED files
 
-- `03_EDA_CTCFBSDB.Rmd` - Download and Process CTCFBSDB, predicted data. Experimental data not used
+- `03_EDA_CTCFBSDB.Rmd` - Download and Process CTCFBSDB, predicted data. LiftOver hg18-hg19-hg38, mm8-mm9-mm10. Experimental data not used
     - Input: `allcomp.txt.gz`, predicted data
     - Output: `hg18.CTCFBSDB.CTCF_predicted_human`, `mm8.CTCFBSDB.CTCF_predicted_mouse` granges objects and BED files
 
-- `04_FIMO_processing.Rmd` - Processing FIMO chromosome-specific results precessed on an HPC cluster. See [scripts](scripts) for more details. File name conventions: `<assembly>.<Database>.<original database name or label>`
+- `04_FIMO_processing.Rmd` - Processing FIMO chromosome-specific results processed on an HPC cluster. See [scripts](scripts) for more details. File name conventions: `<assembly>.<Database>.<original database name or label>`
     - Input: `fimo.txt.gz` files from genome-, database-, and chromosome-specific subfolders
     - Output: `<assembly>.<Database>.FIMO` granges objects and BED file. `log_PWMs.csv` - count statistics: "Assembly", "All (p-value threshold 1e-4)", "Reduced (p-value threshold 1e-4)", "All (p-value threshold 1e-6)", "Reduced (p-value threshold 1e-6)"
 

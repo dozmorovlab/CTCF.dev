@@ -79,6 +79,7 @@ mtx_mouse <- mtx[mtx$Species == "Mouse", ]
 ## GRanges
 
 ```{r}
+# Function to convert CTCFBSDB data to GRanges
 mtx_to_gr <- function(mtx = mtx_human, genome_id = "hg19") {
   gr <- GRanges(seqnames = sapply(mtx$`Chromosome Location`, function(x) strsplit(x, ":|-")[[1]][1]), 
               IRanges(start = sapply(mtx$`Chromosome Location`, function(x) strsplit(x, ":|-")[[1]][2]) %>% as.numeric(), 
@@ -107,7 +108,7 @@ mtx_to_gr <- function(mtx = mtx_human, genome_id = "hg19") {
 
   return(gr)
 }
-
+# Convert CTCFBSDB data to GRanges
 hg18.CTCFBSDB.CTCF_predicted_human <- mtx_to_gr(mtx = mtx_human, genome_id = "hg18")
 length(hg18.CTCFBSDB.CTCF_predicted_human)
 summary(width(hg18.CTCFBSDB.CTCF_predicted_human))
@@ -127,7 +128,8 @@ export.bed(mm8.CTCFBSDB.CTCF_predicted_mouse, fileNameOut2.1)
 # LiftOver
 
 ```{r}
-# Function to download a chain for the gf18_to_XX conversion and create a GRanges object
+# Function to LiftOver hg18-hg19-hg38, mm8-mm9-mm10
+# Downloads a chain for the gf18_to_XX conversion and create a GRanges object
 liftOver_custom <- function(URL = "https://hgdownload.cse.ucsc.edu/goldenpath/hg18/liftOver/hg18ToHg19.over.chain.gz", gr_in = hg18.CTCFBSDB.CTCF_predicted_human, genome_id = "hg19"){
   fileChain <- file.path(dir_project, "data", basename(URL))
   if (!file.exists(str_remove(fileChain, ".gz"))) {

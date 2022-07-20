@@ -73,6 +73,7 @@ table(mtx_mouse$X6) / length(mtx_mouse$X6)
 ## GRanges
 
 ```{r}
+# Function to convert SCREEN data to GRanges
 mtx_to_gr <- function(mtx = mtx_human, genome_id = "hg38") {
   gr <- GRanges(seqnames = mtx$X1, 
               IRanges(start = mtx$X2, 
@@ -105,6 +106,7 @@ mtx_to_gr <- function(mtx = mtx_human, genome_id = "hg38") {
 ```
 
 ```{r}
+# Convert SCREEN data to GRanges
 hg38.SCREEN.GRCh38_CTCF <- mtx_to_gr(mtx = mtx_human, genome_id = "hg38")
 length(hg38.SCREEN.GRCh38_CTCF)
 summary(width(hg38.SCREEN.GRCh38_CTCF))
