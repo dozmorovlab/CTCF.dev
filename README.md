@@ -52,6 +52,7 @@ See https://dozmorovlab.github.io/CTCF/ and https://github.com/dozmorovlab/CTCF/
 
 - `PWMs` - PWMs used in the package. README there
 
+<!--
 - `Chang_Noordermeer_2021.xlsx` - CTCF clusters at TAD boundaries, over extended genomic intervals, CTCF clusters correlate with insulation score. Nano-C and 4C-seq on mESC cells, detailed dissection of CTCF clustering and contribution to domain boundary formation. [Supplementary material](https://www.biorxiv.org/content/10.1101/2021.04.15.440007v1.supplementary-material): CTCF ChIP-seq peaks in mESCs, over 83K peaks with at least one significant CTCF binding motif, mm10, Extended Data Table 1. 
     - Chang, Li-Hsin, Sourav Ghosh, Andrea Papale, Mélanie Miranda, Vincent Piras, Jéril Degrouard, Mallory Poncelet, et al. “[A Complex CTCF Binding Code Defines TAD Boundary Structure and Function](https://doi.org/10.1101/2021.04.15.440007).” Preprint. Genetics, April 15, 2021.
     
@@ -67,6 +68,7 @@ See https://dozmorovlab.github.io/CTCF/ and https://github.com/dozmorovlab/CTCF/
     - `bestCoreMotif_pm50_seq.tab` - the best core motif from each peak, oriented the same way, plus 50 flanking nts
 
 - `CTCFBSDB_PWM.mat` - PWMs in TRANSFAC format `wget https://insulatordb.uthsc.edu/download/CTCFBSDB_PWM.mat`
+-->
 
 ## `PWMscan` https://ccg.epfl.ch/pwmtools/pwmscan.php
 
@@ -88,20 +90,6 @@ See https://dozmorovlab.github.io/CTCF/ and https://github.com/dozmorovlab/CTCF/
 
 
 T2T = GCA_009914755.4
-
-
-
-Dear all,
-
-You may remember the CTCF R package we discussed a few months ago. I followed up with a more rigorous investigation of CTCF data, attaching the manuscript draft. I would appreciate if you agree to be co-authors and provide your ideas or help with additional analyses. Potential ideas include:
-- Using the nullranges framework to evaluate CTCF sites detected using different PWMs;
-- Using this data for experimental Hi-C/TAD demo analysis.
-
-Please, let me know your thoughts and provide your comments by next Monday, June 13, or earlier. I'd appreciate if we could discuss next Friday, June 17, 3:00pm ET. Zoom calendar invite will follow. If it doesn't work for the majority, we'll reschedule.
-
-Looking forward to hearing from you.
-Thanks,
-Mikhail
 
 
 
