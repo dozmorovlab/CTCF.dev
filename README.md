@@ -1,3 +1,7 @@
+# Scripts for the CTCF project
+
+See https://dozmorovlab.github.io/CTCF/ and https://github.com/dozmorovlab/CTCF/ for more information
+
 - `01_Logos.Rmd` - Logo clustering.
     - Input: `/Users/mdozmorov/Documents/Data/GoogleDrive/CTCF.dev/motif_databases/*.meme` motif files
     - Output: `Figure_clustered_main_PWMs.svg`
