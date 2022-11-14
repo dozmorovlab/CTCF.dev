@@ -37,6 +37,8 @@ col3 <- colorRampPalette(c('blue', 'white', 'red'))(20)
 # col3 <- colorRampPalette(c('green', 'black', 'red'))(20)
 # col3 <- colorRamps::green2red(n = 20)
 library(GenomicRanges)
+library(rtracklayer)
+library(plyranges)
 ```
 
 # Settings
@@ -47,10 +49,13 @@ dir_data <- "/Users/mdozmorov/Documents/Data/GoogleDrive/CTCF.dev"
 dir_project <- "/Users/mdozmorov/Documents/Work/GitHub/CTCF.dev"
 
 # Input files
-fileNameIn1 <- file.path(dir_project, "RData", "hg38.MA0139.1.bed")
+fileNameIn1 <- file.path(dir_project, "RData", "BEDfiles", "hg38.MA0139.1.bed")
 fileNameIn2 <- file.path(dir_project, "data", "GRCh38-CTCF.bed")
+fileNameIn3 <- file.path(dir_project, "data", "UCSC_CTCF.tsv")
 # Output files
 fileNameOut1 <- file.path(dir_project, "results", "Figure_human_pvalues_threshold.svg")
+fileNameOut2 <- file.path(dir_project, "results", "overlap_meme_below.csv")
+fileNameOut3 <- file.path(dir_project, "results", "overlap_meme_above.csv")
 ```
 
 # Load data
@@ -118,7 +123,63 @@ ggsave(filename = fileNameOut1, width = 4.5, height = 1.5)
 # svg(filename = fileNameOut1, width = 7, height = 3)
 # print(p)
 # dev.off()
+```
 
+## Overlap with cell-specific sites
+
+```{r}
+# Separate FIMO CTCF peaks into above and below the threshold
+pval_threshold <- 1E-6
+gr_meme_above <- gr_meme %>% filter(pval <= pval_threshold) %>% keepStandardChromosomes(., pruning.mode = "tidy") %>% sort()
+gr_meme_below <- gr_meme %>% filter(pval >  pval_threshold) %>% keepStandardChromosomes(., pruning.mode = "tidy") %>% sort()
+print(paste("Number of CTCFs above", pval_threshold, "p-value threshold", length(gr_meme_above)))
+print(paste("Number of CTCFs below", pval_threshold, "p-value threshold", length(gr_meme_below)))
+# Get all cell type-specific CTCF sites
+# IDs of all CTCF experiments
+mtx <- read_tsv(fileNameIn3, col_names = FALSE)
+# Session for UCSC broser
+mySession <- browserSession()
+genome_id <- "hg38"
+genome(mySession) <- genome_id
+# Overlap counts
+overlap_meme_above <- cbind()
+overlap_meme_below <- cbind()
+for (i in 158:nrow(mtx)) {
+  print(paste(i, "out of", nrow(mtx)))
+  table_name <- paste0("encTfChipPk", mtx[i, "X4"])
+  query <- ucscTableQuery(mySession, table = table_name)
+  gr_ctcf <- getTable(query) %>% makeGRangesFromDataFrame(.) %>% keepStandardChromosomes(., pruning.mode = "tidy") %>% sort()
+  overlap_meme_below <- cbind(overlap_meme_below, countOverlaps(gr_meme_below, gr_ctcf))
+  overlap_meme_above <- cbind(overlap_meme_above, countOverlaps(gr_meme_above, gr_ctcf))
+  gc()
+  write_csv(as.data.frame(overlap_meme_below), fileNameOut2)
+  write_csv(as.data.frame(overlap_meme_above), fileNameOut3)
+}
+
+overlap_meme_below <- read_csv(paste0(fileNameOut2, ".gz"))
+dim(overlap_meme_below)
+overlap_meme_above <- read_csv(paste0(fileNameOut3, ".gz"))
+dim(overlap_meme_above)
+
+# The proportion of CTCF sites detected at p-value > 1E-6 overlapping at least one experimentally detected cell type-specific CTCF sites was XX +/-YY.
+# In contrast, this number for CTCF sites detected at p-value <= 1E-6 was XX+/-YY, suggesting higher proportion of false positives among less significant CTCF sites.
+overlap_meme_above_summary <- rowSums(overlap_meme_above)
+overlap_meme_below_summary <- rowSums(overlap_meme_below)
+print(paste("Average number of times less significant CTCF sites overlap with experimental CTCF sites", mean(overlap_meme_below_summary), "+/-", sd(overlap_meme_below_summary)))
+# [1] "Average number of times less significant CTCF sites overlap with experimental CTCF sites 7.43024371211658 +/- 29.2354917718536"
+print(paste("Average number of times more significant CTCF sites overlap with experimental CTCF sites", mean(overlap_meme_above_summary), "+/-", sd(overlap_meme_above_summary)))
+# [1] "Average number of times more significant CTCF sites overlap with experimental CTCF sites 120.151631212219 +/- 81.188988520227"
+
+# Among less significant CTCF sites, XX% did not overlap any cell type-specific CTCF sites.
+# In contrast, only YY% more significant sites overlap
+print(paste("The proportion of less significant CTCF sites overlapping at least one experimental CTCF site", 1 - (sum(overlap_meme_below_summary == 0) / length(overlap_meme_below_summary)) ))
+# [1] "The proportion of less significant CTCF sites overlapping at least one experimental CTCF site 0.218351650508075"
+print(paste("The proportion of more significant CTCF sites overlapping at least one experimental CTCF site", 1 - (sum(overlap_meme_above_summary == 0) / length(overlap_meme_above_summary)) ))
+# [1] "The proportion of more significant CTCF sites overlapping at least one experimental CTCF site 0.888007013981819"
+
+# P-value of the differences
+res <- wilcox.test(overlap_meme_above_summary, overlap_meme_below_summary)
+res$p.value
 ```
 
 
