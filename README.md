@@ -3,13 +3,13 @@
 See https://dozmorovlab.github.io/CTCF/ and https://github.com/dozmorovlab/CTCF/ for more information
 
 - `01_Logos.Rmd` - Logo clustering.
-    - Input: `/Users/mdozmorov/Documents/Data/GoogleDrive/CTCF.dev/motif_databases/*.meme` motif files
+    - Input: `CTCF.dev/motif_databases/*.meme` motif files
     - Output: `Figure_clustered_main_PWMs.svg`
-    - Input: `/Users/mdozmorov/Documents/Data/GoogleDrive/CTCF.dev/Homo_sapiens_2022_05_20_3_16_pm/pwms_CTCF_motifs/CIS-BP_2.00_Homo_sapiens.meme`, created from combined .txt matrices
+    - Input: `CTCF.dev/Homo_sapiens_2022_05_20_3_16_pm/pwms_CTCF_motifs/CIS-BP_2.00_Homo_sapiens.meme`, created from combined .txt matrices
     - Output: `Figure_CIS-BP_2.00_Homo_sapiens.svg`
-    - Input: `/Users/mdozmorov/Documents/Data/GoogleDrive/CTCF.dev/Mus_musculus_2022_05_20_4_01_pm/pwms_CTCF_motifs/CIS-BP_2.00_Mus_musculus.meme`, created from combined .txt matrices
+    - Input: `CTCF.dev/Mus_musculus_2022_05_20_4_01_pm/pwms_CTCF_motifs/CIS-BP_2.00_Mus_musculus.meme`, created from combined .txt matrices
     - Output: `Figure_CIS-BP_2.00_Mus_musculus.svg`
-    - Input: `/Users/mdozmorov/Documents/Data/GoogleDrive/CTCF.dev/CTCFBSDB_PWM_corrected.meme`
+    - Input: `CTCF.dev/CTCFBSDB_PWM_corrected.meme`
     - Output: `Figure_clustered_CTCFBSDB_PWMs.svg`
 
 - `02_EDA_SCREEN.Rmd` - Download and Process https://screen.encodeproject.org/. Basic stats, conversion to GRanges
@@ -25,7 +25,7 @@ See https://dozmorovlab.github.io/CTCF/ and https://github.com/dozmorovlab/CTCF/
     - Output: `<assembly>.<Database>` granges objects and BED file. `log_PWMs.csv` - count statistics: "Assembly", "All (p-value threshold 1e-4)", "Reduced (p-value threshold 1e-4)", "All (p-value threshold 1e-6)", "Reduced (p-value threshold 1e-6)"
 
 - `05_EDA_liftOver.Rmd` - overlap between originally aligned and lifted-over genomes
-    - Input: BED files from `/Users/mdozmorov/Documents/Data/GoogleDrive/CTCF.dev/CTCF_liftover`. liftOver chains obtained using `download.sh`. Processed with `convert.sh` that also outputs counts of mapped and unmapped regions to `log_liftOver.csv`
+    - Input: BED files from `CTCF.dev/CTCF_liftover`. liftOver chains obtained using `download.sh`. Processed with `convert.sh` that also outputs counts of mapped and unmapped regions to `log_liftOver.csv`
     - Output: `Figure_liftOverJaccard.svg`
 - `05_EDA_liftOver_mm.Rmd` - same for mm9-mm10-mm39
 
@@ -41,7 +41,7 @@ See https://dozmorovlab.github.io/CTCF/ and https://github.com/dozmorovlab/CTCF/
 
 
 - `BED_to_BEDPE.Rmd` - Convert BED to paired BEDPE format
-    - Input: PreciseTAD-predicted regions, `/Users/mdozmorov/Documents/Data/GoogleDrive/Avocado_preciseTAD/Maggie/GM12878/PTBR_Peakachu_outputs/`
+    - Input: PreciseTAD-predicted regions, `Avocado_preciseTAD/Maggie/GM12878/PTBR_Peakachu_outputs/`
     - Output: BEDPE files in the same folder
     
 - `EDA_Chang_Noordermeer_2021.Rmd` - Processing `Chang_Noordermeer_2021.xlsx`
@@ -49,6 +49,10 @@ See https://dozmorovlab.github.io/CTCF/ and https://github.com/dozmorovlab/CTCF/
 - `EDA_AnnotationHub.Rmd` - explore CTCF data on AnnotationHub and ExperimentHub
 
 # `data`
+
+- See [scripts/download_PWMs.sh](scripts/download_PWMs.sh) for data download instructions
+
+- `UCSC_CTCF.tsv` - manually created list of hg38 CTCF experiments, from http://genome.ucsc.edu/cgi-bin/hgTrackUi?hgsid=1466892273_0EgVDbIuSXB31dnORsHXNKaH6gLy&c=chrX&g=encTfChipPk . Used in `07_CTCF_Threshold.Rmd`
 
 - `PWMs` - PWMs used in the package. README there
 
