@@ -33,6 +33,7 @@ library(scales)
 mycols = pal_lancet("lanonc")(8)
 library(GenomicRanges)
 library(rtracklayer)
+library(GenomicDistributions)
 ```
 
 # Settings
@@ -197,15 +198,32 @@ fileNameOut1 <- file.path(dir_project, "results", "log_PWMs.csv")
 if (file.exists(fileNameOut1)) { file.remove(fileNameOut1) }
 # Defined from FIMO_EDA
 pval_threshold <- 1e-6
-files <- list.files(file.path(dir_project, "RData"), pattern = "bed", full.names = TRUE)
+files <- list.files(file.path(dir_project, "RData", "BEDfiles"), pattern = "bed", full.names = TRUE) %>% sort
 for (fil in files) {
   print(basename(fil) %>% str_remove(., ".bed"))
   mtx <- read_tsv(fil, col_names = FALSE, col_types = c("ciicdciddc"))
   colnames(mtx) <- c("seqnames", "start", "end", "name", "score", "strand", "width", "pvalue", "qvalue", "sequence")
   gr <- makeGRangesFromDataFrame(mtx, keep.extra.columns = TRUE)
+  # Width distribution
+  gr_width <- width(gr)
+  width_distribution <- paste(formatC(min(gr_width), format = "f", digits = 0), 
+                              formatC(mean(gr_width), format = "f", digits = 2), 
+                              formatC(max(gr_width), format = "f", digits = 0), sep = "/")
+  # Distance to nearby
+  gr_nearest <- calcNearestNeighbors(gr)
+  nearest_distribution <- paste(formatC(min(gr_nearest), format = "f", digits = 0), 
+                              formatC(mean(gr_nearest), format = "f", digits = 2), 
+                              formatC(max(gr_nearest), format = "f", digits = 0), sep = "/")
+  # # Proportion of overlapping enrties
+  # tmp <- findOverlaps(gr, gr)
+  # prop_overlapping <- sort(table(queryHits(tmp)) %>% table(), decreasing = TRUE)
+  # prop_overlapping <- sum(prop_overlapping[which(names(prop_overlapping) != "1")]) / length(gr)
   # Summary
   summary_to_save <- data.frame(File = basename(fil) %>% str_remove(., ".bed"),
                                 Assembly = strsplit(basename(fil), ".", fixed = TRUE)[[1]][1],
+                                `Width, bp (min/mean/max)` = width_distribution,
+                                `Distance to nearest, bp (min/mean/max)` = nearest_distribution,
+#                                 `Proportion of overlapping` = formatC(prop_overlapping, format = "f", digits = 3),
                                 `All (p-value threshold 1e-4)` = length(gr),
                                 `Reduced (p-value threshold 1e-4)` = length(reduce(gr)),
                                 `All (p-value threshold 1e-6)` = length(gr[gr$pvalue < pval_threshold]),
@@ -215,3 +233,28 @@ for (fil in files) {
 }
 ```
 
+# Overlap
+
+```{r}
+files <- list.files(file.path(dir_project, "RData", "BEDfiles"), pattern = "bed", full.names = TRUE) %>% sort
+# Vector to store proportion of overlapping sites
+prop_overlapping <- vector(mode = "numeric", length = length(files))
+for (i in 1:length(files)) {
+  fil <- files[i]
+  print(basename(fil) %>% str_remove(., ".bed"))
+  # Process all but CIS_BP data
+  if (!grepl("CIS_BP", fil)) {
+    mtx <- read_tsv(fil, col_names = FALSE, col_types = c("ciicdciddc"))
+    colnames(mtx) <- c("seqnames", "start", "end", "name", "score", "strand", "width", "pvalue", "qvalue", "sequence")
+    gr <- makeGRangesFromDataFrame(mtx, keep.extra.columns = TRUE)
+    # Proportion of overlapping enrties
+    tmp <- findOverlaps(gr, gr)
+    prop_overlap <- sort(table(queryHits(tmp)) %>% table(), decreasing = TRUE)
+    prop_overlapping[i] <- sum(prop_overlap[which(names(prop_overlap) != "1")]) / length(gr)
+  } else {
+    prop_overlapping[i] <- NA
+  }
+}
+prop_overlap_df <- data.frame(Data = basename(files) %>% str_remove(., ".bed"),
+                              Prop_overlap = prop_overlapping)
+```
